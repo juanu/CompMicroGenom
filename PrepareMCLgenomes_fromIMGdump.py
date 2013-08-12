@@ -199,7 +199,10 @@ if __name__ == '__main__':
                     annotation_file.write(output_line + "\n")
 
                 else:
-                    output_line = protein + "\t" + annotation_type + "\t" + function + "\t" + annotation_defs[function]
+                    if annotation_defs.has_key(function):
+                        output_line = protein + "\t" + annotation_type + "\t" + function + "\t" + annotation_defs[function]
+                    else:
+                        output_line = protein + "\t" + annotation_type + "\t" + function
                     annotation_file.write(output_line + "\n")
 
         nucleotide_file.close()
