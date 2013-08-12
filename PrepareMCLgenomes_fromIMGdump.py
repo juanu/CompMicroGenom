@@ -89,6 +89,7 @@ if __name__ == '__main__':
     genome_dictionary, total_genome_count = read_genome_list(args.genome_list)
 
     for prefix in genome_dictionary:
+        print "Processing genome: %s" % prefix
         img_id = genome_dictionary[prefix]
 
         organism_folder = args.input_folder + "/" + img_id
