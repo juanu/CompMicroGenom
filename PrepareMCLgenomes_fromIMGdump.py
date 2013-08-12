@@ -170,7 +170,11 @@ if __name__ == '__main__':
                     if feature_type == "CRISPR":
                         continue
 
-                    features = elements[8]
+                    try:
+                        features = elements[8]
+                    except IndexError:
+                        continue
+
                     protein_id = None
                     product_desc = None
 
