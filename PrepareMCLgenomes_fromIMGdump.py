@@ -149,7 +149,11 @@ if __name__ == '__main__':
                     line = line.rstrip()
                     elements = line.split("\t")
                     annotation_summary[elements[0]]["KO"] = elements[9]
-                    annotation_defs[elements[9]] = elements[10]
+
+                    try:
+                        annotation_defs[elements[9]] = elements[10]
+                    except IndexError:
+                        continue
 
         for line in open(input_gff, 'r'):
             if line.strip():
