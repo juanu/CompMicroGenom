@@ -172,7 +172,7 @@ if __name__ == '__main__':
     ##Total number of clusters
     logfile.write("Total number of analyzed clusters: %d" % len(total_clusters) + "\n")
 
-    features_to_annotate = ["COG", "KO", "Pfam", "Product"]
+    features_to_annotate = ["COG", "KO", "PFAM", "Product"]
 
     #Create the output files
     for feature in features_to_annotate:
