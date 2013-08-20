@@ -350,6 +350,9 @@ if __name__ == '__main__':
         check_number += len(value)
 
     if total_number_proteins - len(set_of_proteins_in_clusters) - check_number != 0:
+        print "Total number of proteins:" + total_number_proteins
+        print "Total number of proteins in clusters:" + str(len(set_of_proteins_in_clusters))
+        print "check number:" + check_number
         sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
                  "clusters does not match the total number of proteins")
 
