@@ -12,8 +12,8 @@ def read_genome_list(input_file):
     """
     import sys
 
-    genome_count = 0
-    genome_info = {}
+    genome_count = 0  # Numbers of genomes analyzed
+    genome_info = {}  #Store the information for the genomes
     genome_name_list = []
     genome_prefix_list = []
 
@@ -52,10 +52,10 @@ def get_protein_info(genome_list, fasta_directory):
     from Bio import SeqIO
     from collections import defaultdict
 
-    proteins_in_genomes = defaultdict(list)
-    protein_length = defaultdict(int)
+    proteins_in_genomes = defaultdict(list)  # output list of the proteins that are present in each genome
+    protein_length = defaultdict(int)  # length of each protein. Assumes a unique ID for each protein
 
-    files_read_counter = 0
+    files_read_counter = 0  # Count the number of files being read
 
     fasta_files = [fasta_directory + "/" + fasta + ".fasta" for fasta in genome_list]
 
@@ -80,9 +80,9 @@ def get_orthomcl_results(cluster_file, genome_list):
 
     orthomcl_results = open(cluster_file, 'r')
 
-    cluster_dictionary = defaultdict(list)
-    unique_proteins_genome_count = defaultdict(int)
-    proteins_in_cluster = set()
+    cluster_dictionary = defaultdict(list)  # Dictionary with the clusters. Stores only the clusters that will be used
+    unique_proteins_genome_count = defaultdict(int)  # Proteins that are not in any cluster
+    proteins_in_cluster = set()  # Proteins in cluster. Needed to search for proteins that are absent
     total_cluster_count = 0
     removed_clusters = 0
 
@@ -94,7 +94,7 @@ def get_orthomcl_results(cluster_file, genome_list):
 
         clean_protein_list = []  # This is used to remove proteins from genomes not in the list
 
-        for genome in genome_list:
+        for genome in genome_list:  # Adding the proteins that we need
             [clean_protein_list.append(protein) for protein in [x for x in proteins if x.startswith(genome)]]
 
         #Now I need to evaluate those clusters that now are unique and zero
@@ -353,8 +353,8 @@ if __name__ == '__main__':
         print "Total number of proteins:" + str(total_number_proteins)
         print "Total number of proteins in clusters:" + str(len(set_of_proteins_in_clusters))
         print "check number:" + str(check_number)
-        sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
-                 "clusters does not match the total number of proteins")
+        #sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
+         #        "clusters does not match the total number of proteins")
 
     #Print the output files
     count_unique_proteins = open(args.output_directory + "/count_unique_sequences.txt", 'w')
