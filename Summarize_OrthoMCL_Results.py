@@ -353,8 +353,8 @@ if __name__ == '__main__':
         print "Total number of proteins:" + str(total_number_proteins)
         print "Total number of proteins in clusters:" + str(len(set_of_proteins_in_clusters))
         print "check number:" + str(check_number)
-        #sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
-         #        "clusters does not match the total number of proteins")
+        sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
+                 "clusters does not match the total number of proteins")
 
     #Print the output files
     count_unique_proteins = open(args.output_directory + "/count_unique_sequences.txt", 'w')
