@@ -337,7 +337,7 @@ if __name__ == '__main__':
             prev_adjusted_pvalue = adjusted_pvalue
             position += 1
 
-            sorted_results.insert(adjusted_pvalue, 4)
+            entry.insert(adjusted_pvalue, 4)
 
         corrected_pvalue_file = open(args.output_directory + "/paml_results_corrected.txt", "w")
 
