@@ -275,6 +275,7 @@ if __name__ == '__main__':
     jobs = []
     i = 1
 
+    #Create the jobs to run
     for chunk in clusters_chunks:
         temporal_folder = args.output_directory + "/temp_" + str(i)
         if not os.path.exists(temporal_folder):
@@ -285,12 +286,9 @@ if __name__ == '__main__':
         p = multiprocessing.Process(target=cluster_analysis, args=(chunk, args.cluster_folder,
         group_constrains, args.output_directory, temporal_folder, cluster_paml_results, groups_no_data))
 
-        jobs.append(p)
-        p.start()
-        p.join()  # Needed to finish the processes
-
-
-
+    #Run the jobs
+    [proc.start() for proc in jobs]
+    [proc.join() for proc in jobs]
 
     print cluster_paml_results
 
