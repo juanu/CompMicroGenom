@@ -86,17 +86,33 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
 
     #Names have a pipe sign (|) with the organism|protein_id.
     # I need to keep track of everything to replace in the final tree
-    clades_in_tree = {str(clade).split("|")[0]: str(clade).split("|")[1] for clade in cluster_tree.get_terminals()}
+    #clades_in_tree = {str(clade).split("|")[0]: str(clade).split("|")[1] for clade in cluster_tree.get_terminals()}
+
+    clades_in_tree_by_gene_id = {str(clade).split("|")[1]: str(clade).split("|")[0] for clade in cluster_tree.get_terminals()}
+
+    species_in_tree = set(str(clade).split("|")[0] for clade in cluster_tree.get_terminals())
 
     clade_results = dict()
 
     #Iterate on each group
     for group in groups:
 
-        #Check that all the branches are present on the tree (and is not the only branch
-        if set(groups[group]).issubset(set(clades_in_tree.keys())) and len(clades_in_tree.keys()) > len(groups[group]):
-            dict_new_clade_names = {name + "|" + clades_in_tree[name]: name + "|" + clades_in_tree[name] + " #1"
-                                    for name in groups[group]}
+        #Check that all the branches are present on the tree (and is not the only branch)
+
+        if set(groups[group]).issubset(species_in_tree) and len(species_in_tree) > len(groups[group]):
+
+            dict_new_clade_names  = dict()
+
+            for gene_id in clades_in_tree_by_gene_id:
+                genome = clades_in_tree_by_gene_id[gene_id]
+
+                if genome in groups[group]:
+                    dict_new_clade_names[genome + "|" + gene_id] = genome + "|" + gene_id + " #1"
+                else:
+                    continue
+
+            #dict_new_clade_names = {name + "|" + clades_in_tree[name]: name + "|" + clades_in_tree[name] + " #1"
+            #                        for name in groups[group]}
 
             #Replace the names in the tree and save the tree
 
