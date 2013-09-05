@@ -292,7 +292,10 @@ if __name__ == '__main__':
 
     print cluster_paml_results
 
-    for entry in cluster_paml_results.sort(key=itemgetter(4)):
+    sorted_results = sorted(cluster_paml_results, key=itemgetter(4))
+
+
+    for entry in sorted_results:
         adjusted_pvalue = entry[4] * total_tests / (position)
 
         #If the value is greater than 1, we set as one (0 < p < 1)
