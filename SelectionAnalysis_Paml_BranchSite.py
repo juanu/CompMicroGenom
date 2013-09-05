@@ -206,6 +206,7 @@ def cluster_analysis(cluster_list, cluster_folder, group_branches, output_folder
         #Check that the cluster file exists, if not continue
         if not os.path.exists(cluster_file):
             print "Cluster %s not found\n" % cluster
+            continue
 
         new_tree = run_fasttree(cluster_file, temporal_folder)  # Make tree, no confidence values
         new_alignment_file, number_sequences, alignment_length = adjust_alignment(cluster_file, temporal_folder)
