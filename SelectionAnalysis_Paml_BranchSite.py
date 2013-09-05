@@ -240,7 +240,8 @@ if __name__ == '__main__':
 
     #Result and output files
 
-    cluster_paml_results = defaultdict()
+    cluster_paml_results = list()
+    groups_no_data = list()
 
     for cluster in clusters_to_analyze:
 
@@ -256,15 +257,14 @@ if __name__ == '__main__':
         paml_site_branch_results = run_paml_per_group(group_constrains, new_alignment_file, new_tree,
                                                                args.output_directory, temporal_folder)
 
-        group_results = defaultdict(list)
+       # group_results = defaultdict(list)
 
         for group in paml_site_branch_results:
 
             if paml_site_branch_results[group] is None:
-                group_results[group] = None
+                groups_no_data.append([cluster, group])
 
             else:
-
                 pvalue = LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"),
                                   paml_site_branch_results[group]["M1a"].get("lnL"), 1)
 
@@ -276,19 +276,38 @@ if __name__ == '__main__':
                 average_omega = (float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["branch types"]["foreground"]) +
                                  float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foreground"])) / 2
 
-
                 #Store the final results
                 #Group, Nseqs, Length, p-value, q-value, P1 in Ma, Omega in W
+                cluster_paml_results.append([cluster, group, number_sequences, alignment_length,
+                                             round(pvalue, 3), qvalue, proportion_sites, average_omega ])
 
-                group_results[group] = [number_sequences, alignment_length, pvalue, qvalue, proportion_sites, average_omega]
 
+    #Perform FDR, based on Benjamini approach, at 5%. Add this to the qvalue in the dictionary
+    #Based on this post:
+    #http://stats.stackexchange.com/questions/870/multiple-hypothesis-testing-correction-with-benjamini-hochberg-p-values-or-q-va
 
-        cluster_paml_results[cluster] = group_results
-        print group_results
+    total_tests = len(cluster_paml_results)  # Total number of performed tests
+    position = 1
+    prev_adjusted_pvalue = 0
+
+    for entry in cluster_paml_results.sort(key=lambda row: row[4]):
+        adjusted_pvalue = entry[4] * total_tests / (position)
+
+        #If the value is greater than 1, we set as one (0 < p < 1)
+        adjusted_pvalue = min(adjusted_pvalue, 1)
+
+        #Check that the value is not greater than the previous one
+        adjusted_pvalue = max(adjusted_pvalue, prev_adjusted_pvalue)
+        prev_adjusted_pvalue = adjusted_pvalue
+        position += 1
+
+        entry[4] = adjusted_pvalue
 
 
 
     print cluster_paml_results
+
+    #print cluster_paml_results
     #Summary information
 
 
