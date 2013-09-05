@@ -299,7 +299,7 @@ if __name__ == '__main__':
     output_file = open(args.output_directory + "/paml_results.txt", 'w')
 
     for result in cluster_paml_results:
-        "\t".join(result)
+        "\t".join(str(x) for x in result)
 
 
 
