@@ -32,7 +32,7 @@ def run_paml_ma_m1a(alignment, tree, output_dir, working_dir):
 
     cml.alignment = alignment
     cml.tree = tree
-    cml.out_file = output_dir + "/" + os.path.basename(alignment)[:-4] + "_" + os.path.basename(tree)[:-4] + ".ma"
+    cml.out_file = output_dir + "/" + os.path.basename(alignment)[:-4] + os.path.basename(tree)[:-4] + ".ma"
     cml.working_dir = working_dir
 
     cml.set_options(seqtype=1, CodonFreq=2, clock=0, model=2, NSsites=[2],  fix_kappa=0, kappa=2,
@@ -57,7 +57,7 @@ def run_paml_ma_m1a(alignment, tree, output_dir, working_dir):
 
     print "Running codeml for model 1A in : %s" % os.path.basename(tree)
 
-    cml.out_file = output_dir + "/" + os.path.basename(tree)[:-4] + ".m1a"
+    cml.out_file = output_dir + "/" + os.path.basename(alignment)[:-4] + os.path.basename(tree)[:-4] + ".m1a"
     cml.set_options(seqtype=1, CodonFreq=2, clock=0, model=2, NSsites=[2],  fix_kappa=0, kappa=2,
                     fix_omega=1, omega=1, verbose=1, fix_blength=1)
 
@@ -287,6 +287,9 @@ if __name__ == '__main__':
 
         jobs.append(p)
         p.start()
+        p.join()  # Needed to finish the processes
+
+
 
 
     print cluster_paml_results
