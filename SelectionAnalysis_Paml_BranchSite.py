@@ -198,11 +198,43 @@ def multiple_replace(replace_dict, text):
     return regex.sub(lambda mo: replace_dict[mo.string[mo.start():mo.end()]], text)
 
 
+def cluster_analysis(cluster_list, cluster_folder, group_branches, output_folder, temporal_folder, results, no_data):
+
+    for cluster in cluster_list:
+        cluster_file = cluster_folder + "/" + ".fna"  # Add fna extension
+        new_tree = run_fasttree(cluster_file, temporal_folder)  # Make tree, no confidence values
+        new_alignment_file, number_sequences, alignment_length = adjust_alignment(cluster_file, temporal_folder)
+
+        paml_site_branch_results = run_paml_per_group(group_branches, new_alignment_file, new_tree,
+                                                      output_folder, temporal_folder)
+
+        for group in paml_site_branch_results:
+
+            if paml_site_branch_results[group] is None:
+                no_data.append([cluster, group])
+
+            else:
+                pvalue = LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"),
+                                   paml_site_branch_results[group]["M1a"].get("lnL"), 1)
+
+                qvalue = 0
+
+                proportion_sites = float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["proportion"]) + \
+                                    float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["proportion"])
+
+                average_omega = (float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["branch types"]["foreground"]) +
+                                  float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foreground"])) / 2
+
+                #Store the final results
+                #Group, Nseqs, Length, p-value, q-value, P1 in Ma, Omega in W
+                results.append([cluster, group, number_sequences, alignment_length,
+                                              round(pvalue, 3), qvalue, proportion_sites, average_omega ])
+
 if __name__ == '__main__':
     import os
     import argparse
     from collections import defaultdict
-    from operator import itemgetter
+    import multiprocessing
 
     program_description = "Script that takes a list of clusters and runs PAML (codeml). The model used is a branch-site" \
                           "with relaxed test (MA vs M1a). "
@@ -219,16 +251,10 @@ if __name__ == '__main__':
     #Check for the output folder and also create the temporal folder
     #I'm using the PID to create the temporary folder, which should allow multiple instances of the script to run
 
-    temporal_folder = args.output_directory + "/temp_" + str(os.getpid())
-
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
 
-    if not os.path.exists(temporal_folder):
-        os.makedirs(temporal_folder)
-
     #Read the cluster file and group file
-
     clusters_to_analyze = [line.rsplit()[0] for line in open(args.cluster_list) if line.strip()]
 
     group_constrains = defaultdict(list)
@@ -239,87 +265,68 @@ if __name__ == '__main__':
             group_constrains[line.split("\t")[0]].append(line.split("\t")[1])
 
     #Result and output files
-
     cluster_paml_results = list()
     groups_no_data = list()
 
-    for cluster in clusters_to_analyze:
+    #Run in parallel, split the list
+    num_proc = 2
+    clusters_chunks= [clusters_to_analyze[i:i+num_proc] for i in range(0, len(clusters_to_analyze), num_proc)]
+    jobs = []
 
-        cluster_file = args.cluster_folder + "/" + cluster + ".fna"  # Add fna extension
+    for chunk in clusters_chunks:
+        i = 1
+        temporal_folder = args.output_directory + "/temp_" + str(i)
+        if not os.path.exists(temporal_folder):
+            os.makedirs(temporal_folder)
 
-        new_tree = run_fasttree(cluster_file, temporal_folder)  # make tree
+        p = multiprocessing.Process(target=clusters_to_analyze, args=(chunk, args.cluster_folder,
+        group_constrains, args.output_folder, temporal_folder, cluster_paml_results, groups_no_data))
 
-        new_alignment_file, number_sequences, alignment_length = \
-            adjust_alignment(cluster_file, temporal_folder)  # convert alignment to right format
-
-        #m0_results = run_paml_m0(new_alignment_file, new_tree, args.output_directory, temporal_folder) # Run M0
-
-        paml_site_branch_results = run_paml_per_group(group_constrains, new_alignment_file, new_tree,
-                                                               args.output_directory, temporal_folder)
-
-       # group_results = defaultdict(list)
-
-        for group in paml_site_branch_results:
-
-            if paml_site_branch_results[group] is None:
-                groups_no_data.append([cluster, group])
-
-            else:
-                pvalue = LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"),
-                                  paml_site_branch_results[group]["M1a"].get("lnL"), 1)
-
-                qvalue = 0
-
-                proportion_sites = float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["proportion"]) + \
-                                   float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["proportion"])
-
-                average_omega = (float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["branch types"]["foreground"]) +
-                                 float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foreground"])) / 2
-
-                #Store the final results
-                #Group, Nseqs, Length, p-value, q-value, P1 in Ma, Omega in W
-                cluster_paml_results.append([cluster, group, number_sequences, alignment_length,
-                                             round(pvalue, 3), qvalue, proportion_sites, average_omega ])
-
-
-    #Perform FDR, based on Benjamini approach, at 5%. Add this to the qvalue in the dictionary
-    #Based on this post:
-    #http://stats.stackexchange.com/questions/870/multiple-hypothesis-testing-correction-with-benjamini-hochberg-p-values-or-q-va
-
-    total_tests = len(cluster_paml_results)  # Total number of performed tests
-    position = 1
-    prev_adjusted_pvalue = 0
-
-    print cluster_paml_results
-    print total_tests
-
-    sorted_results = sorted(cluster_paml_results, key=itemgetter(4))
-
-
-    for entry in sorted_results:
-        adjusted_pvalue = float(entry[4]) * (total_tests / position)
-
-        print adjusted_pvalue
-
-        #If the value is greater than 1, we set as one (0 < p < 1)
-        adjusted_pvalue = min(adjusted_pvalue, 1)
-
-        #Check that the value is not greater than the previous one
-        adjusted_pvalue = max(adjusted_pvalue, prev_adjusted_pvalue)
-
-        prev_adjusted_pvalue = adjusted_pvalue
-        position += 1
-
-        entry[5] = adjusted_pvalue
-
+        jobs.append(p)
+        p.start()
 
 
     print cluster_paml_results
 
-    #print cluster_paml_results
-    #Summary information
 
 
+    # for cluster in clusters_to_analyze:
+    #
+    #     cluster_file = args.cluster_folder + "/" + cluster + ".fna"  # Add fna extension
+    #
+    #     new_tree = run_fasttree(cluster_file, temporal_folder)  # make tree
+    #
+    #     new_alignment_file, number_sequences, alignment_length = \
+    #         adjust_alignment(cluster_file, temporal_folder)  # convert alignment to right format
+    #
+    #     #m0_results = run_paml_m0(new_alignment_file, new_tree, args.output_directory, temporal_folder) # Run M0
+    #
+    #     paml_site_branch_results = run_paml_per_group(group_constrains, new_alignment_file, new_tree,
+    #                                                            args.output_directory, temporal_folder)
+    #
+    #    # group_results = defaultdict(list)
+    #
+    #     for group in paml_site_branch_results:
+    #
+    #         if paml_site_branch_results[group] is None:
+    #             groups_no_data.append([cluster, group])
+    #
+    #         else:
+    #             pvalue = LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"),
+    #                               paml_site_branch_results[group]["M1a"].get("lnL"), 1)
+    #
+    #             qvalue = 0
+    #
+    #             proportion_sites = float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["proportion"]) + \
+    #                                float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["proportion"])
+    #
+    #             average_omega = (float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["branch types"]["foreground"]) +
+    #                              float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foreground"])) / 2
+    #
+    #             #Store the final results
+    #             #Group, Nseqs, Length, p-value, q-value, P1 in Ma, Omega in W
+    #             cluster_paml_results.append([cluster, group, number_sequences, alignment_length,
+    #                                          round(pvalue, 3), qvalue, proportion_sites, average_omega ])
 
 
 
