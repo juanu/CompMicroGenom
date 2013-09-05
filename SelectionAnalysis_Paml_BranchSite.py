@@ -18,6 +18,7 @@ def LRT_paml(H0, H1, df):
 
     return pval
 
+
 def run_paml_ma_m1a(alignment, tree, output_dir, working_dir):
     """
     This is tu run PAML in each defined branch under models MA and M1a
@@ -31,7 +32,7 @@ def run_paml_ma_m1a(alignment, tree, output_dir, working_dir):
 
     cml.alignment = alignment
     cml.tree = tree
-    cml.out_file = output_dir + "/" + os.path.basename(tree)[:-4] + ".paml_output.models"
+    cml.out_file = output_dir + "/" + os.path.basename(tree)[:-4] + ".ma"
     cml.working_dir = working_dir
 
     cml.set_options(seqtype=1, CodonFreq=2, clock=0, model=2, NSsites=[2],  fix_kappa=0, kappa=2,
@@ -56,6 +57,7 @@ def run_paml_ma_m1a(alignment, tree, output_dir, working_dir):
 
     print "Running codeml for model 1A in : %s" % os.path.basename(tree)
 
+    cml.out_file = output_dir + "/" + os.path.basename(tree)[:-4] + ".m1a"
     cml.set_options(seqtype=1, CodonFreq=2, clock=0, model=2, NSsites=[2],  fix_kappa=0, kappa=2,
                     fix_omega=1, omega=1, verbose=1, fix_blength=1)
 
@@ -80,7 +82,6 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
     This is to take each defined group, modify the tree, and the run PAML
     """
     from Bio import Phylo
-    import re
 
     cluster_tree = Phylo.read(tree, "newick")
 
@@ -88,7 +89,8 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
     # I need to keep track of everything to replace in the final tree
     #clades_in_tree = {str(clade).split("|")[0]: str(clade).split("|")[1] for clade in cluster_tree.get_terminals()}
 
-    clades_in_tree_by_gene_id = {str(clade).split("|")[1]: str(clade).split("|")[0] for clade in cluster_tree.get_terminals()}
+    clades_in_tree_by_gene_id = {str(clade).split("|")[1]: str(clade).split("|")[0]
+                                 for clade in cluster_tree.get_terminals()}
 
     species_in_tree = set(str(clade).split("|")[0] for clade in cluster_tree.get_terminals())
 
@@ -101,7 +103,7 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
 
         if set(groups[group]).issubset(species_in_tree) and len(species_in_tree) > len(groups[group]):
 
-            dict_new_clade_names  = dict()
+            dict_new_clade_names = dict()
 
             for gene_id in clades_in_tree_by_gene_id:
                 genome = clades_in_tree_by_gene_id[gene_id]
@@ -110,9 +112,6 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
                     dict_new_clade_names[genome + "|" + gene_id] = genome + "|" + gene_id + " #1"
                 else:
                     continue
-
-            #dict_new_clade_names = {name + "|" + clades_in_tree[name]: name + "|" + clades_in_tree[name] + " #1"
-            #                        for name in groups[group]}
 
             #Replace the names in the tree and save the tree
 
@@ -130,9 +129,7 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
 
             paml_results = run_paml_ma_m1a(alignment, group_tree, output_dir, working_dir)
 
-
             clade_results[group] = paml_results
-
 
         else:
             clade_results[group] = None
@@ -165,8 +162,7 @@ def adjust_alignment(alignment_file, output_folder):
         output_alignment.write("%s\n" % record.id)
         output_alignment.write("%s\n" % record.seq)
 
-
-    return new_alignment_file
+    return new_alignment_file, len(alignment), alignment.get_alignment_length()
 
 
 def run_fasttree(alignment_file, output_folder):
@@ -203,7 +199,6 @@ def multiple_replace(replace_dict, text):
 
 
 if __name__ == '__main__':
-    import sys
     import os
     import argparse
     from collections import defaultdict
@@ -243,11 +238,9 @@ if __name__ == '__main__':
             line = line.rstrip()
             group_constrains[line.split("\t")[0]].append(line.split("\t")[1])
 
-
     #Result and output files
 
-    paml_results = defaultdict()
-
+    cluster_paml_results = defaultdict()
 
     for cluster in clusters_to_analyze:
 
@@ -255,31 +248,47 @@ if __name__ == '__main__':
 
         new_tree = run_fasttree(cluster_file, temporal_folder)  # make tree
 
-        new_alignment_file = adjust_alignment(cluster_file, temporal_folder)  # convert alignment to right format
+        new_alignment_file, number_sequences, alignment_length = \
+            adjust_alignment(cluster_file, temporal_folder)  # convert alignment to right format
 
         #m0_results = run_paml_m0(new_alignment_file, new_tree, args.output_directory, temporal_folder) # Run M0
 
         paml_site_branch_results = run_paml_per_group(group_constrains, new_alignment_file, new_tree,
                                                                args.output_directory, temporal_folder)
 
-        print paml_site_branch_results
+        group_results = defaultdict(list)
 
         for group in paml_site_branch_results:
-            print LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"), paml_site_branch_results[group]["M1a"].get("lnL"), 1)
+
+            if paml_site_branch_results[group] is None:
+                group_results[group] = None
+
+            else:
+
+                pvalue = LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"),
+                                  paml_site_branch_results[group]["M1a"].get("lnL"), 1)
+
+                qvalue = None
+
+                proportion_sites = float(paml_site_branch_results[group]["Ma"][2]["proportion"]) + \
+                                   float(paml_site_branch_results[group]["Ma"][3]["proportion"])
+
+                average_omega = (float(paml_site_branch_results[group]["Ma"][2]["branch types"]["foreground"]) +
+                                 float(paml_site_branch_results[group]["Ma"][3]["branch types"]["foregroound"])) / 2
+
+
+                #Store the final results
+                #Group, Nseqs, Length, p-value, q-value, P1 in Ma, Omega in W
+
+                group_results[group] = [number_sequences, alignment_length, pvalue, qvalue, proportion_sites, average_omega]
+
+
+        cluster_paml_results[cluster] = group_results
+        print group_results
 
 
 
-        #Perform test and summarize results:
-
-        cluster_results = defaultdict()
-
-
-        #for clade in m3_clade_results:
-        #    results = list()
-
-        #    m0_vs_m3_lrt, test_result = LRT_paml(m0_results.get("lnl"), m3_clade_results[clade].get("lnl"), 4)
-
-
+    print cluster_paml_results
     #Summary information
 
 
