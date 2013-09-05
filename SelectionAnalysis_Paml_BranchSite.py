@@ -271,7 +271,7 @@ if __name__ == '__main__':
     #Run in parallel, split the list
     num_proc = 2
     num_chunks = len(clusters_to_analyze) / num_proc
-    clusters_chunks=[clusters_to_analyze[i:i+num_chunks] for i in range(0, len(clusters_to_analyze), num_chunks)]
+    clusters_chunks = [clusters_to_analyze[i:i+num_chunks] for i in range(0, len(clusters_to_analyze), num_chunks)]
     jobs = []
 
 
