@@ -291,12 +291,13 @@ if __name__ == '__main__':
     prev_adjusted_pvalue = 0
 
     print cluster_paml_results
+    print total_tests
 
     sorted_results = sorted(cluster_paml_results, key=itemgetter(4))
 
 
     for entry in sorted_results:
-        adjusted_pvalue = float(entry[4]) * total_tests / (position)
+        adjusted_pvalue = float(entry[4]) * (total_tests / position)
 
         print adjusted_pvalue
 
@@ -309,7 +310,7 @@ if __name__ == '__main__':
         prev_adjusted_pvalue = adjusted_pvalue
         position += 1
 
-        entry[4] = adjusted_pvalue
+        entry[5] = adjusted_pvalue
 
 
 
