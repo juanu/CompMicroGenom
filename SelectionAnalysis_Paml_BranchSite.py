@@ -202,7 +202,7 @@ if __name__ == '__main__':
     import os
     import argparse
     from collections import defaultdict
-
+    from operator import itemgetter
 
     program_description = "Script that takes a list of clusters and runs PAML (codeml). The model used is a branch-site" \
                           "with relaxed test (MA vs M1a). "
@@ -292,7 +292,7 @@ if __name__ == '__main__':
 
     print cluster_paml_results
 
-    for entry in cluster_paml_results.sort(key=lambda row: row[4]):
+    for entry in cluster_paml_results.sort(key=itemgetter(4)):
         adjusted_pvalue = entry[4] * total_tests / (position)
 
         #If the value is greater than 1, we set as one (0 < p < 1)
