@@ -273,7 +273,9 @@ if __name__ == '__main__':
     clusters_chunks= [clusters_to_analyze[i:i+num_proc] for i in range(0, len(clusters_to_analyze), num_proc)]
     jobs = []
 
+
     for chunk in clusters_chunks:
+        print chunk
         i = 1
         temporal_folder = args.output_directory + "/temp_" + str(i)
         if not os.path.exists(temporal_folder):
