@@ -280,7 +280,7 @@ if __name__ == '__main__':
             os.makedirs(temporal_folder)
 
         p = multiprocessing.Process(target=clusters_to_analyze, args=(chunk, args.cluster_folder,
-        group_constrains, args.output_folder, temporal_folder, cluster_paml_results, groups_no_data))
+        group_constrains, args.output_directory, temporal_folder, cluster_paml_results, groups_no_data))
 
         jobs.append(p)
         p.start()
