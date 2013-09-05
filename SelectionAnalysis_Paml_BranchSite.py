@@ -201,7 +201,7 @@ def multiple_replace(replace_dict, text):
 def cluster_analysis(cluster_list, cluster_folder, group_branches, output_folder, temporal_folder, results, no_data):
 
     for cluster in cluster_list:
-        cluster_file = cluster_folder + "/" + ".fna"  # Add fna extension
+        cluster_file = cluster_folder + "/" + cluster + ".fna"  # Add fna extension
         new_tree = run_fasttree(cluster_file, temporal_folder)  # Make tree, no confidence values
         new_alignment_file, number_sequences, alignment_length = adjust_alignment(cluster_file, temporal_folder)
 
