@@ -32,7 +32,7 @@ def run_paml_ma_m1a(alignment, tree, output_dir, working_dir):
 
     cml.alignment = alignment
     cml.tree = tree
-    cml.out_file = output_dir + "/" + os.path.basename(tree)[:-4] + ".ma"
+    cml.out_file = output_dir + "/" + os.path.basename(alignment)[:-4] + "_" + os.path.basename(tree)[:-4] + ".ma"
     cml.working_dir = working_dir
 
     cml.set_options(seqtype=1, CodonFreq=2, clock=0, model=2, NSsites=[2],  fix_kappa=0, kappa=2,
@@ -273,10 +273,9 @@ if __name__ == '__main__':
     num_chunks = len(clusters_to_analyze) / num_proc
     clusters_chunks = [clusters_to_analyze[i:i+num_chunks] for i in range(0, len(clusters_to_analyze), num_chunks)]
     jobs = []
-
+    i = 1
 
     for chunk in clusters_chunks:
-        i = 1
         temporal_folder = args.output_directory + "/temp_" + str(i)
         if not os.path.exists(temporal_folder):
             os.makedirs(temporal_folder)
