@@ -290,6 +290,8 @@ if __name__ == '__main__':
     position = 1
     prev_adjusted_pvalue = 0
 
+    print cluster_paml_results
+
     for entry in cluster_paml_results.sort(key=lambda row: row[4]):
         adjusted_pvalue = entry[4] * total_tests / (position)
 
