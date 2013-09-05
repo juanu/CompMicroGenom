@@ -202,6 +202,11 @@ def cluster_analysis(cluster_list, cluster_folder, group_branches, output_folder
 
     for cluster in cluster_list:
         cluster_file = cluster_folder + "/" + cluster + ".fna"  # Add fna extension
+
+        #Check that the cluster file exists, if not continue
+        if not os.path.exists(cluster_file):
+            print "Cluster %s not found\n" % cluster
+
         new_tree = run_fasttree(cluster_file, temporal_folder)  # Make tree, no confidence values
         new_alignment_file, number_sequences, alignment_length = adjust_alignment(cluster_file, temporal_folder)
 
