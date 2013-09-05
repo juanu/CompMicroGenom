@@ -247,6 +247,7 @@ if __name__ == '__main__':
     parser.add_argument("-g", "--groups", type=str, help="Group constrains", required=True)
     parser.add_argument("-o", "--output_directory", type=str, help="Output folder", required=True)
     parser.add_argument("-p", "--num_processors", type=int, help="Number of processors to use", required=True)
+    parser.add_argument("-f", "--fdr", help="Perform false discovery rate")
 
     args = parser.parse_args()
 
@@ -297,9 +298,46 @@ if __name__ == '__main__':
 
     #Print the results
     output_file = open(args.output_directory + "/paml_results.txt", 'w')
+    no_results_file = open(args.output_directory + "/no_results.txt", 'w')
 
     for result in cluster_paml_results:
         output_file.write("\t".join(str(x) for x in result) + "\n")
+
+    for entry in groups_no_data:
+        print entry + "\n"
+
+    output_file.close()
+    no_results_file.close()
+
+    #False discovery
+    if args.fdr:
+        from operator import itemgetter
+
+        total_tests = len(cluster_paml_results)  # Total number of performed tests
+
+        position = 1
+        prev_adjusted_pvalue = 0
+
+        sorted_results = sorted(cluster_paml_results, key=itemgetter(4))
+
+        for entry in sorted_results:
+            adjusted_pvalue = float(entry[4]) * (total_tests / position)
+
+            #If the value is greater than 1, we set as one (0 < p < 1)
+            adjusted_pvalue = min(adjusted_pvalue, 1)
+
+            #Check that the value is not greater than the previous one
+            adjusted_pvalue = max(adjusted_pvalue, prev_adjusted_pvalue)
+
+            prev_adjusted_pvalue = adjusted_pvalue
+            position += 1
+
+            sorted_results.insert(adjusted_pvalue, 4)
+
+        corrected_pvalue_file = open(args.output_directory + "/paml_results_corrected.txt", "w")
+
+        for result in sorted_results:
+            corrected_pvalue_file.write("\t".join(str(x) for x in result) + "\n")
 
 
 
