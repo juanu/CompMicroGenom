@@ -296,13 +296,16 @@ if __name__ == '__main__':
 
 
     for entry in sorted_results:
-        adjusted_pvalue = entry[4] * total_tests / (position)
+        adjusted_pvalue = float(entry[4]) * total_tests / (position)
+
+        print adjusted_pvalue
 
         #If the value is greater than 1, we set as one (0 < p < 1)
         adjusted_pvalue = min(adjusted_pvalue, 1)
 
         #Check that the value is not greater than the previous one
         adjusted_pvalue = max(adjusted_pvalue, prev_adjusted_pvalue)
+
         prev_adjusted_pvalue = adjusted_pvalue
         position += 1
 
