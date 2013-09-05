@@ -235,6 +235,7 @@ if __name__ == '__main__':
     import argparse
     from collections import defaultdict
     import multiprocessing
+    from multiprocessing import Manager
 
     program_description = "Script that takes a list of clusters and runs PAML (codeml). The model used is a branch-site" \
                           "with relaxed test (MA vs M1a). "
@@ -265,8 +266,9 @@ if __name__ == '__main__':
             group_constrains[line.split("\t")[0]].append(line.split("\t")[1])
 
     #Result and output files
-    cluster_paml_results = list()
-    groups_no_data = list()
+    manager = Manager()
+    cluster_paml_results = manager.list([])
+    groups_no_data = manager.list([])
 
     #Run in parallel, split the list
     num_proc = 2
@@ -292,7 +294,7 @@ if __name__ == '__main__':
     [proc.start() for proc in jobs]
     [proc.join() for proc in jobs]
 
-    print cluster_paml_results
+    print cluster_paml_results, groups_no_data
 
 
 
