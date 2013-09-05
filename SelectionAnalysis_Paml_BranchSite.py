@@ -270,11 +270,11 @@ if __name__ == '__main__':
 
                 qvalue = None
 
-                proportion_sites = float(paml_site_branch_results[group]["Ma"][2]["proportion"]) + \
-                                   float(paml_site_branch_results[group]["Ma"][3]["proportion"])
+                proportion_sites = float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["proportion"]) + \
+                                   float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["proportion"])
 
-                average_omega = (float(paml_site_branch_results[group]["Ma"][2]["branch types"]["foreground"]) +
-                                 float(paml_site_branch_results[group]["Ma"][3]["branch types"]["foregroound"])) / 2
+                average_omega = (float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["branch types"]["foreground"]) +
+                                 float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foregroound"])) / 2
 
 
                 #Store the final results
