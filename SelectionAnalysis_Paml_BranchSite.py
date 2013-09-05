@@ -276,11 +276,12 @@ if __name__ == '__main__':
 
 
     for chunk in clusters_chunks:
-        print chunk
         i = 1
         temporal_folder = args.output_directory + "/temp_" + str(i)
         if not os.path.exists(temporal_folder):
             os.makedirs(temporal_folder)
+
+        i += 1
 
         p = multiprocessing.Process(target=cluster_analysis, args=(chunk, args.cluster_folder,
         group_constrains, args.output_directory, temporal_folder, cluster_paml_results, groups_no_data))
