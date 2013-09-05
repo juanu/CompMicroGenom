@@ -286,6 +286,8 @@ if __name__ == '__main__':
         p = multiprocessing.Process(target=cluster_analysis, args=(chunk, args.cluster_folder,
         group_constrains, args.output_directory, temporal_folder, cluster_paml_results, groups_no_data))
 
+        jobs.append(p)
+
     #Run the jobs
     [proc.start() for proc in jobs]
     [proc.join() for proc in jobs]
