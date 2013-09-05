@@ -282,7 +282,7 @@ if __name__ == '__main__':
         if not os.path.exists(temporal_folder):
             os.makedirs(temporal_folder)
 
-        p = multiprocessing.Process(target=clusters_to_analyze, args=(chunk, args.cluster_folder,
+        p = multiprocessing.Process(target=cluster_analysis, args=(chunk, args.cluster_folder,
         group_constrains, args.output_directory, temporal_folder, cluster_paml_results, groups_no_data))
 
         jobs.append(p)
