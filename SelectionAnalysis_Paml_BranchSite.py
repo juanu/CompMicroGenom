@@ -268,7 +268,7 @@ if __name__ == '__main__':
                 pvalue = LRT_paml(paml_site_branch_results[group]["Ma"].get("lnL"),
                                   paml_site_branch_results[group]["M1a"].get("lnL"), 1)
 
-                qvalue = None
+                qvalue = 0
 
                 proportion_sites = float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["proportion"]) + \
                                    float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["proportion"])
