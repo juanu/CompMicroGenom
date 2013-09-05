@@ -274,7 +274,7 @@ if __name__ == '__main__':
                                    float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["proportion"])
 
                 average_omega = (float(paml_site_branch_results[group]["Ma"]["site_classes"][2]["branch types"]["foreground"]) +
-                                 float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foregroound"])) / 2
+                                 float(paml_site_branch_results[group]["Ma"]["site_classes"][3]["branch types"]["foreground"])) / 2
 
 
                 #Store the final results
