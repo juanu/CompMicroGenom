@@ -35,8 +35,12 @@ def cluster_analysis(cluster_list, cluster_folder, output_folder, temporal_folde
         pvalue_m7_m8 = paml_stats.lrt(paml_sites_results[7].get("lnL"), paml_sites_results[8].get("lnL"), 2)
 
         #Store the omega and proportion of sites,based on the M8 model
-        proportion_sites = float(paml_sites_results[8]["site_classes"][10]["proportion"])
-        omega_value = float(paml_sites_results[8]["site_classes"][10]["omega"])
+        try:
+            proportion_sites = float(paml_sites_results[8]["site_classes"][10]["proportion"])
+            omega_value = float(paml_sites_results[8]["site_classes"][10]["omega"])
+        except KeyError:
+            print cluster
+            print paml_sites_results
 
         #Store final results
 
