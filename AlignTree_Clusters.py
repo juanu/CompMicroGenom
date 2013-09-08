@@ -21,19 +21,6 @@ def create_sequence_dictionary(fasta_folder):
 
     return sequence_dictionary
 
-def get_cluster_information(input_cluster_file):
-    cluster_file = open(input_cluster_file, 'r')
-
-    clusters = {}
-
-    for line in cluster_file:
-        line = line.rstrip()
-
-        cluster_id, gene_list = line.split("\t")
-        clusters[cluster_id] = gene_list
-
-    return clusters
-
 if __name__ == '__main__':
     from cogent import LoadSeqs, DNA, PROTEIN
     from cogent.app.mafft import align_unaligned_seqs as mafft_align_unaligned_seqs
@@ -41,6 +28,7 @@ if __name__ == '__main__':
     from cogent.app.fasttree import build_tree_from_alignment as build_tree_fasttree
     import os
     import argparse
+    from Common import ClusterTools
 
     program_description = "Script that takes a list of clusters, and the sequence information of the genes. " \
                           "The output is tha alignment of each cluster, and a tree (FastTree)"
@@ -68,7 +56,7 @@ if __name__ == '__main__':
             os.makedirs(folder)
 
     #Get the cluster information
-    cluster_information = get_cluster_information(args.cluster_file)
+    cluster_information = ClusterTools.get_cluster_information(args.cluster_file)
 
     #Create the sequence dictionary
     dna_sequence_dic = create_sequence_dictionary(args.fasta_nuc_directory)

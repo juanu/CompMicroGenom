@@ -4,46 +4,6 @@
 __author__ = 'Juan Ugalde'
 
 
-def read_genome_list(input_file):
-    """
-    This function reads a genome list. The first column is the identifier of the genome depending on the annotation
-    source used (IMG, JGI or Genbank), the second column is the genome name (Full species name) and the third column
-    is the prefix used for this genome in the OrthoMCL analysis
-    """
-    import sys
-
-    genome_count = 0  # Numbers of genomes analyzed
-    genome_info = {}  #Store the information for the genomes
-    genome_name_list = []
-    genome_prefix_list = []
-
-    for line in open(input_file, 'r'):
-        if line.strip():
-            line = line.rstrip()
-            element = line.split("\t")
-
-            #Check for duplicates
-        if element[0] in genome_info.keys():  # Duplicate genome ID
-            print "Duplicate genome id found:  " + line
-            sys.exit("Check for duplicates")
-
-        elif element[1] in genome_name_list:  # Duplicate genome name
-            print "Duplicate genome name found: " + line
-            sys.exit("Check for duplicates")
-
-        elif element[2] in genome_prefix_list:  # Duplicate prefix name
-            print "Duplicate prefix found: " + line
-            sys.exit("Check for duplicates")
-
-        else:
-            genome_info[element[2]] = element[0]
-            genome_count += 1
-            genome_name_list.append(element[1])
-            genome_prefix_list.append(element[2])
-
-    return genome_info, genome_count
-
-
 def get_protein_info(genome_list, fasta_directory):
     """
     This function goes into a folder with fasta files (.fasta) of the proteins and get the information for the proteins
@@ -273,6 +233,7 @@ if __name__ == '__main__':
     import os
     import sys
     import argparse
+    from Common import ClusterTools
 
     #Create the options and program description
     program_description = "This script summarize the results of orthoMCL, and create several summary files." \
@@ -301,7 +262,7 @@ if __name__ == '__main__':
     run_summary = open(args.output_directory + "/logfile.txt", 'w')
 
     #####Read the genome list
-    genome_id_dictionary, genome_count = read_genome_list(args.genome_list_index)
+    genome_id_dictionary, genome_count = ClusterTools.read_genome_list(args.genome_list_index)
 
     run_summary.write("Genomes in the genome list: %d" % genome_count + "\n")
 
