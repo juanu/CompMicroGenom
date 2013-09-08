@@ -110,7 +110,7 @@ if __name__ == '__main__':
         output_file.write("\t".join(str(x) for x in result) + "\n")
 
     for entry in groups_no_data:
-        print entry + "\n"
+        no_results_file.write(entry + "\n")
 
     output_file.close()
     no_results_file.close()
