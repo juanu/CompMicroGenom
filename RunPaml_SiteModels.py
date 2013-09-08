@@ -38,7 +38,7 @@ def cluster_analysis(cluster_list, cluster_folder, output_folder, temporal_folde
         try:
             proportion_sites = float(paml_sites_results[8]["site_classes"][10]["proportion"])
             omega_value = float(paml_sites_results[8]["site_classes"][10]["omega"])
-        except KeyError:
+        except TypeError:
             print cluster
             print paml_sites_results
 
