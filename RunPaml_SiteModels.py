@@ -23,11 +23,11 @@ def cluster_analysis(cluster_list, cluster_folder, output_folder, temporal_folde
         new_tree = paml_prepare.run_fasttree(cluster_file, temporal_folder)
 
         #Make the new alignment, and get information about the alignment
-        new_alignment_file, number_sequences, alignment_length = paml_prepare.adjust_alignment(cluster_file, temporal_folder)
+        new_alignment_file, number_sequences, alignment_length = \
+            paml_prepare.adjust_alignment(cluster_file, temporal_folder)
 
         #Run PAML for each branch in the cluster with both models
-        paml_sites_results = paml_run.paml_sites(new_alignment_file, new_tree,
-                                                      output_folder, temporal_folder)
+        paml_sites_results = paml_run.paml_sites(new_alignment_file, new_tree, output_folder, temporal_folder)
 
         #Calculate pvalue
 
@@ -39,8 +39,8 @@ def cluster_analysis(cluster_list, cluster_folder, output_folder, temporal_folde
             proportion_sites = float(paml_sites_results[8]["site_classes"][10]["proportion"])
             omega_value = float(paml_sites_results[8]["site_classes"][10]["omega"])
         except TypeError:
-            print cluster
-            print paml_sites_results
+            proportion_sites = 0
+            omega_value = 0
 
         #Store final results
 

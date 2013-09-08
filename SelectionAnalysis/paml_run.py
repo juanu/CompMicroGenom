@@ -15,7 +15,7 @@ def paml_sites(alignment, tree, output_dir, working_dir):
     #Parameters to PAML
     cml.alignment = alignment
     cml.tree = tree
-    cml.out_file = output_dir + "/" + os.path.basename(alignment)[:-4] + os.path.basename(tree)[:-4] + ".sites.m1a"
+    cml.out_file = output_dir + "/" + os.path.basename(alignment)[:-4] + ".site_models"
     cml.working_dir = working_dir
 
     cml.set_options(seqtype=1, CodonFreq=2, clock=0, model=0, NSsites=[1, 2, 7, 8],  fix_kappa=0, kappa=2,
