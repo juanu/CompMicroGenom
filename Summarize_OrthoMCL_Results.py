@@ -184,7 +184,7 @@ def clusters_in_groups(clusters, groups):
     combination_clusters = defaultdict(list)
 
     #Create inverted dictionary
-    genome_group_info = dict()
+    genome_group_info = defaultdict()
 
     for group in groups:
         for genome in groups[group]:
@@ -400,7 +400,8 @@ if __name__ == '__main__':
                                       str(len(unique_group_clusters[group])) + "\t" + str(protein_count) + "\n")
 
             for cluster in unique_group_clusters[group]:
-                list_unique_clusters_group.write(group + "\t" + cluster + "\t" + ",".join(cluster_information[cluster]))
+                list_unique_clusters_group.write(group + "\t" + cluster + "\t" + ",".join(cluster_information[cluster])
+                                                 + "\n")
 
         count_group_results.write("\n")
 
