@@ -126,7 +126,7 @@ if __name__ == '__main__':
         corrected_pvalue_results = paml_stats.fdr(cluster_paml_results, 3)
 
         #Correct M7-M8
-        corrected_pvalue_results = paml_stats.fdr(corrected_pvalue_results, 4)
+        corrected_pvalue_results = paml_stats.fdr(corrected_pvalue_results, 5)
 
         corrected_results_file = open(args.output_directory + "/paml_results_corrected.txt", "w")
 

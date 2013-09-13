@@ -144,7 +144,7 @@ if __name__ == '__main__':
     parser.add_argument("-n", "--cluster_folder", type=str, help="Output folder", required=True)
     parser.add_argument("-g", "--groups", type=str, help="Group constrains", required=True)
     parser.add_argument("-o", "--output_directory", type=str, help="Output folder", required=True)
-    parser.add_argument("-p", "--num_processors", type=int, help="Number of processors to use", required=True)
+    parser.add_argument("-p", "--num_processors", type=int, help="Number of processors to use (Default is 1)", default=1)
     parser.add_argument("-f", "--fdr", help="Perform false discovery rate")
 
     args = parser.parse_args()
@@ -170,6 +170,12 @@ if __name__ == '__main__':
     groups_no_data = manager.list()
     clusters_not_found = manager.list()
 
+
+    ##This section needs to be improved (probably the code needs to be rewritten).
+    #There is an issue that in some cases some of the large or most complicated clusters ended up being all together
+    ##in one chunk.
+    ##I need to reimplement this section in a proper manner, using multiprocessing.pool (for example).
+
     #Run in parallel, split the list
     num_proc = args.num_processors
     num_chunks = len(clusters_to_analyze) / num_proc
@@ -190,7 +196,7 @@ if __name__ == '__main__':
 
         jobs.append(p)
 
-    #Run the jobs
+    # #Run the jobs
     [proc.start() for proc in jobs]
     [proc.join() for proc in jobs]
 
