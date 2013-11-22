@@ -313,7 +313,7 @@ if __name__ == '__main__':
     if total_number_proteins - len(set_of_proteins_in_clusters) - check_number != 0:
         print "Total number of proteins:" + str(total_number_proteins)
         print "Total number of proteins in clusters:" + str(len(set_of_proteins_in_clusters))
-        print "check number:" + str(check_number)
+        print "Removed proteins:" + str(check_number)
         sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
                  "clusters does not match the total number of proteins")
 
@@ -387,11 +387,13 @@ if __name__ == '__main__':
     ##Get clusters shared by groups
     if args.group_information:
 
+        print genome_groups
         unique_group_clusters, combination_clusters = clusters_in_groups(cluster_information, genome_groups)
 
         list_unique_clusters_group = open(args.output_directory + "/list_unique_clusters_group.txt", 'w')
         list_all_group_combinations = open(args.output_directory + "/list_all_group_combinations.txt", 'w')
         count_group_results = open(args.output_directory + "/count_groups.txt", 'w')
+        protein_count_group_results = open(args.output_directory + "/count_proteins_group.txt", 'w')
 
         for group in unique_group_clusters:
             protein_count = sum(len(cluster_information[cluster]) for cluster in unique_group_clusters[group])
@@ -415,6 +417,27 @@ if __name__ == '__main__':
             for cluster in combination_clusters[combination]:
                 list_all_group_combinations.write(combination_name + "\t"
                                                   + cluster + "\t" + ",".join(cluster_information[cluster]) + "\n")
+
+            protein_count_group_results.write(combination_name)
+
+            for group in combination:
+
+                count = 0
+
+                genomes = genome_groups[group]
+
+                for cluster in combination_clusters[combination]:
+                    for genome in genomes:
+                        for protein in cluster_information[cluster]:
+                            if protein.startswith(genome):
+                                count += 1
+
+
+                protein_count_group_results.write("\t" + group + ":" + str(count))
+
+            protein_count_group_results.write("\n")
+
+
 
         count_group_results.close()
         list_unique_clusters_group.close()
