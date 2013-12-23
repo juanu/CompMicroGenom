@@ -3,6 +3,38 @@
 
 __author__ = 'Juan A. Ugalde'
 
+
+#I will rewrite some of the code later. This class should go into a separate file. Right now I'm not
+#using it, but it will be useful later
+
+
+class GffEntry():
+    """
+    This is used to read a gff line, and store the appropiate information into an object
+    """
+    def __init__(self, gff_line):
+        entries = gff_line.split("\t")
+        self.type = entries[2]
+        self.start = entries[3]
+        self.stop = entries[4]
+        self.strand = entries[6]
+        self.info = entries[8]
+
+    def annot(self, annot_value):
+
+        """
+        Returns the value of the annotation entry on the gff line
+        the usual entries are ID, locus_tag and product
+        """
+        annot_dic = {key: result for (key, result) in [entry.split("=") for entry in self.info]}
+
+        try:
+            return annot_dic[annot_value]
+        except KeyError:
+            return None
+
+
+
 #Run the script
 import os
 import argparse
@@ -30,6 +62,7 @@ if not os.path.exists(args.output_directory):
     os.makedirs(args.output_directory + "/protein")
     os.makedirs(args.output_directory + "/genome")
     os.makedirs(args.output_directory + "/annotation")
+    os.makedirs(args.output_directory + "/coords")
 
 genome_dictionary, total_genome_count = PrepareData.read_genome_list(args.genome_list)
 
@@ -45,6 +78,7 @@ for prefix in genome_dictionary:
     aminoacid_file = open(args.output_directory + "/protein/" + prefix + ".fasta", 'w')
     genome_file = open(args.output_directory + "/genome/" + prefix + ".fna", 'w')
     annotation_file = open(args.output_directory + "/annotation/" + prefix + ".txt", 'w')
+    coords_file = open(args.output_directory + "/coords/" + prefix + ".txt", 'w')
 
     #Generate the output files with the sequences
     input_nucleotide = file_prefix + ".genes.fna"
@@ -123,6 +157,7 @@ for prefix in genome_dictionary:
                 protein_id = None
                 product_desc = None
 
+
                 for feature in features.split(";"):
                     if feature.startswith("ID"):
                         name, protein_id = feature.split("=")
@@ -132,6 +167,9 @@ for prefix in genome_dictionary:
 
                 if protein_id is not None:
                     annotation_summary[protein_id]["Feature_type"] = elements[2]
+                    annotation_summary[protein_id]["start"] = elements[3]
+                    annotation_summary[protein_id]["end"] = elements[4]
+                    annotation_summary[protein_id]["contig"] = elements[0]
 
                 if product_desc is not None:
                     annotation_summary[protein_id]["Product"] = product_desc
@@ -154,7 +192,11 @@ for prefix in genome_dictionary:
                     output_line = protein + "\t" + annotation_type + "\t" + function
                 annotation_file.write(output_line + "\n")
 
+        coords_file.write(annotation_summary[protein]["contig"] + "\t" + protein + "\t" + annotation_summary[protein]["start"] + "\t" + annotation_summary[protein]["end"] + "\n")
+
+
     nucleotide_file.close()
     aminoacid_file.close()
     genome_file.close()
     annotation_file.close()
+    coords_file.close()

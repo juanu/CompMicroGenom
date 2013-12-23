@@ -92,6 +92,7 @@ if __name__ == '__main__':
         aminoacid_file = open(args.output_directory + "/protein/" + prefix + ".fasta", 'w')
         genome_file = open(args.output_directory + "/genome/" + prefix + ".fna", 'w')
         annotation_file = open(args.output_directory + "/annotation/" + prefix + ".txt", 'w')
+        coords_file = open(args.output_directory + "/coords/" + prefix + ".txt", 'w')
 
         #Get the list of gbk files in the folder
         gbk_files = get_gbk_files(organism_folder)
@@ -128,9 +129,13 @@ if __name__ == '__main__':
                             if cog_number is not None:
                                 annotation_file.write(protein_id + "\tCOG\t" + cog_number + "\n")
 
+                        coords_file.write(scaf_id + "\t" + protein_id + "\t" + str(int(feature.location.start)) + "\t" +
+                                          str(int(feature.location.end)) + "\n")
+
             input_handle.close()
 
         nucleotide_file.close()
         aminoacid_file.close()
         genome_file.close()
         annotation_file.close()
+        coords_file.close()

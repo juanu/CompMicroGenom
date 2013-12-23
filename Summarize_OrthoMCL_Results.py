@@ -387,7 +387,7 @@ if __name__ == '__main__':
     ##Get clusters shared by groups
     if args.group_information:
 
-        print genome_groups
+        #print genome_groups
         unique_group_clusters, combination_clusters = clusters_in_groups(cluster_information, genome_groups)
 
         list_unique_clusters_group = open(args.output_directory + "/list_unique_clusters_group.txt", 'w')
