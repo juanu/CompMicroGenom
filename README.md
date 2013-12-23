@@ -16,5 +16,8 @@ The main requirements are Python 2.7+ (not Python 3), and libraries:
 
 In addition, to run the alignment and tree script, Mafft, Fasttree and PAML (codeml) need to be installed and accessible globally.
 
+#####Note (added on November 27th, 2013):
+This code is still very preliminary. Our plans are to re-organize the code over the next few months, and have a first release on the first trimester of 2014. Keep an eye on the repository. The code currently here comes with no warranty :) But, any comments, ideas, etc, feel free to email me: juanuu@gmail.com
+
 
 
