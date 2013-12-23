@@ -74,7 +74,8 @@ for genome in genome_gene_info:
         #Get COG one letter code
         try:
             letter_cog = cog_one_letter[COG_number]
-            letter_description = desc_cog_letter[letter_cog[0]]
+            print letter_cog
+            letter_description = desc_cog_letter[letter_cog]
         except KeyError:
             letter_cog = None
             letter_description = None
