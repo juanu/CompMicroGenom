@@ -12,6 +12,7 @@ def cog_definitions():
     for line in open(path + "/cog_list.txt", 'r'):
         if line.strip():
             line = line.rstrip()
+            print line
             letter_code, cog_number, cog_def = line.split("\t")
             letter_code = letter_code.replace("[", '')
             letter_code = letter_code.replace("]", '')
