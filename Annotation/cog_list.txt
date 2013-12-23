@@ -327,7 +327,7 @@
 [EM]	COG0329	Dihydrodipicolinate synthase/N-acetylneuraminate lyase
 [O]	COG0330	Membrane protease subunits, stomatin/prohibitin homologs
 [I]	COG0331	(acyl-carrier-protein) S-malonyltransferase
-[I]	COG0332	3-oxoacyl-[acyl-carrier-protein]	synthase III
+[I]	COG0332	3-oxoacyl-[acyl-carrier-protein] synthase III
 [J]	COG0333	Ribosomal protein L32
 [E]	COG0334	Glutamate dehydrogenase/leucine dehydrogenase
 [J]	COG0335	Ribosomal protein L19
@@ -587,7 +587,7 @@
 [L]	COG0593	ATPase involved in DNA replication initiation
 [J]	COG0594	RNase P protein component
 [R]	COG0595	Predicted hydrolase of the metallo-beta-lactamase superfamily
-[R]	COG0596	Predicted hydrolases or acyltransferases (alpha/beta hydrolase superfamily)
+[R]	COG0596	Predicted hydrolases or acyltransferases (alpha/beta hydrolase superfamily) 
 [MU]	COG0597	Lipoprotein signal peptidase
 [P]	COG0598	Mg2+ and Co2+ transporters
 [S]	COG0599	Uncharacterized homolog of gamma-carboxymuconolactone decarboxylase subunit
@@ -614,7 +614,7 @@
 [E]	COG0620	Methionine synthase II (cobalamin-independent)
 [J]	COG0621	2-methylthioadenine synthetase
 [R]	COG0622	Predicted phosphoesterase
-[I]	COG0623	Enoyl-[acyl-carrier-protein]	reductase (NADH)
+[I]	COG0623	Enoyl-[acyl-carrier-protein] reductase (NADH)
 [E]	COG0624	Acetylornithine deacetylase/Succinyl-diaminopimelate desuccinylase and related deacylases
 [O]	COG0625	Glutathione S-transferase
 [E]	COG0626	Cystathionine beta-lyases/cystathionine gamma-synthases
@@ -892,7 +892,7 @@
 [L]	COG1041	Predicted DNA modification methylase
 [C]	COG1042	Acyl-CoA synthetase (NDP forming)
 [M]	COG1043	Acyl-[acyl carrier protein]--UDP-N-acetylglucosamine O-acyltransferase
-[M]	COG1044	UDP-3-O-[3-hydroxymyristoyl]	glucosamine N-acyltransferase
+[M]	COG1044	UDP-3-O-[3-hydroxymyristoyl] glucosamine N-acyltransferase
 [E]	COG1045	Serine acetyltransferase
 [O]	COG1047	FKBP-type peptidyl-prolyl cis-trans isomerases 2
 [C]	COG1048	Aconitase A
@@ -4006,7 +4006,7 @@
 [K]	COG4742	Predicted transcriptional regulator
 [S]	COG4743	Predicted membrane protein
 [S]	COG4744	Uncharacterized conserved protein
-[O]	COG4745	Predicted membrane-bound mannosyltransferase
+[O]	COG4745	Predicted membrane-bound mannosyltransferase 
 [S]	COG4746	Uncharacterized protein conserved in archaea
 [R]	COG4747	ACT domain-containing protein
 [S]	COG4748	Uncharacterized conserved protein
@@ -4233,7 +4233,7 @@
 [KT]	COG4978	Transcriptional regulator, effector-binding domain/component
 [R]	COG4980	Gas vesicle protein
 [I]	COG4981	Enoyl reductase domain of yeast-type FAS1
-[I]	COG4982	3-oxoacyl-[acyl-carrier protein]	reductase
+[I]	COG4982	3-oxoacyl-[acyl-carrier protein] reductase
 [S]	COG4983	Uncharacterized conserved protein
 [S]	COG4984	Predicted membrane protein
 [P]	COG4985	ABC-type phosphate transport system, auxiliary component
