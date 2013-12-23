@@ -74,10 +74,13 @@ for genome in genome_gene_info:
         #Get COG one letter code
         try:
             letter_cog = cog_one_letter[COG_number]
-            print letter_cog
-            letter_description = desc_cog_letter[letter_cog]
         except KeyError:
             letter_cog = None
+
+        #Description
+        try:
+            letter_description = desc_cog_letter[letter_cog[0]]
+        except IndexError:
             letter_description = None
 
         output_line = [genome, protein, product, COG_number, COG_description, letter_cog, letter_description,
