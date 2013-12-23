@@ -4,7 +4,7 @@ def cog_definitions():
     import os
     from collections import defaultdict
 
-    path = os.path.realpath(__file__)
+    path = os.path.dirname(__file__)
 
     cog_one_letter = defaultdict(str)
     desc_cog_number = defaultdict(str)
