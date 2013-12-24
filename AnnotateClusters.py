@@ -143,7 +143,7 @@ if __name__ == '__main__':
                                              + " ; ".join(["%s=%s" % (k, v) for k, v in total_conflicts.items()]) + "\n")
 
                     else:
-                        output_top_hit.write(cluster + "\t" + top_hit + "\t" + function_description + "\t" +
+                        output_top_hit.write(cluster + "\t" + top_hit + "\t" + str(function_description) + "\t" +
                                              " ; ".join(["%s=%s" % (k, v) for k, v in total_conflicts.items()]) + "\n")
 
             elif top_hit is None and total_conflicts is not None and unresolved_conflicts is not None:
