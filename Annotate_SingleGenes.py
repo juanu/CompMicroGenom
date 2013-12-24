@@ -89,4 +89,4 @@ for genome in genome_gene_info:
         output_file.write("\t".join(str(x) for x in output_line) + "\n")
 
 #print protein_annotation
-#print function_definitions
+#print function_definitionsw
