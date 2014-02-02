@@ -46,10 +46,11 @@ if __name__ == '__main__':
     protein_alignment_folder = args.output_directory + "/protein_alignment"
     dna_unaligned_folder = args.output_directory + "/dna_unaligned"
     dna_aligned_folder = args.output_directory + "/dna_aligned"
-    tree_folder = args.output_directory + "/protein_trees"
+    protein_tree_folder = args.output_directory + "/protein_trees"
+    dna_tree_folder = args.output_directory + "/dna_trees"
 
     folder_list = [args.output_directory, protein_unaligned_folder, protein_alignment_folder, dna_unaligned_folder,
-                   dna_aligned_folder, tree_folder]
+                   dna_aligned_folder, protein_tree_folder, dna_tree_folder]
 
     for folder in folder_list:
         if not os.path.exists(folder):
@@ -122,11 +123,16 @@ if __name__ == '__main__':
 
         #Make protein trees using FastTree
         protein_tree = build_tree_fasttree(aligned_AA, PROTEIN)
+        protein_tree_output = open(protein_tree_folder + "/" + cluster + ".tre", 'w')
+        protein_tree_output.write(protein_tree.getNewick(with_distances=True))
+        protein_tree_output.close()
 
-        #Tree file
-        tree_output = open(tree_folder + "/" + cluster + ".tre", 'w')
+        #Make nucleotide trees using FastTree
+        nucleotide_tree = build_tree_fasttree(aligned_DNA, DNA)
+        nucleotide_tree_output = open(dna_tree_folder + "/" + cluster + ".tre", 'w')
+        nucleotide_tree_output.write(nucleotide_tree.getNewick(with_distances=True))
+        nucleotide_tree_output.close()
 
-        tree_output.write(protein_tree.getNewick(with_distances=True))
 
         #Write the unaligned and aligned sequences
         unaligned_DNA.writeToFile(dna_unaligned_folder + "/" + cluster + ".fna", format="fasta")
@@ -134,7 +140,7 @@ if __name__ == '__main__':
         aligned_DNA.writeToFile(dna_aligned_folder + "/" + cluster + ".fna", format="fasta")
         aligned_AA.writeToFile(protein_alignment_folder + "/" + cluster + ".faa", format="fasta")
 
-        tree_output.close()
+
 
     #Print log files
 
