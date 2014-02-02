@@ -110,15 +110,17 @@ for prefix in genome_dictionary:
                 annotation_summary[elements[0]]["COG"] = elements[9]
                 annotation_defs[elements[9]] = elements[10]
 
-    for line in open(input_pfam, 'r'):
-        if line.strip():
-            if line.startswith("gene_oid"):
-                continue
-            else:
-                line = line.rstrip()
-                elements = line.split("\t")
-                annotation_summary[elements[0]]["PFAM"] = elements[8]
-                annotation_defs[elements[8]] = elements[9]
+    if os.path.exists(input_pfam):
+
+        for line in open(input_pfam, 'r'):
+            if line.strip():
+                if line.startswith("gene_oid"):
+                    continue
+                else:
+                    line = line.rstrip()
+                    elements = line.split("\t")
+                    annotation_summary[elements[0]]["PFAM"] = elements[8]
+                    annotation_defs[elements[8]] = elements[9]
 
     for line in open(input_ko, 'r'):
         if line.strip():
