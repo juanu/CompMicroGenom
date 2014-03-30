@@ -104,6 +104,9 @@ if __name__ == '__main__':
 
     #Run the jobs
     [proc.start() for proc in jobs]
+    #Testing this
+    [proc.close() for proc in jobs]
+    
     [proc.join() for proc in jobs]
 
     #Print the results
