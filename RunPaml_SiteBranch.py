@@ -20,6 +20,7 @@ def run_paml_per_group(groups, alignment, tree, output_dir, working_dir):
     cluster_tree = Phylo.read(tree, "newick")  # Read the input tree
 
     #Names have a pipe sign (|) with the organism|protein_id.
+    #Here I create a dictionary where the key is the protein_id and the value is the organism
     clades_in_tree_by_gene_id = {str(clade).split("|")[1]: str(clade).split("|")[0]
                                  for clade in cluster_tree.get_terminals()}
 

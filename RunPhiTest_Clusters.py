@@ -9,13 +9,18 @@ __author__ = 'Juan A. Ugalde'
 #In my case I'm interested in the recombination free groups, so the p-value has to be more than 0.05
 
 def rename_phi_outfiles(folder, cluster):
-    os.chdir(os.path.abspath(folder))
 
-    phi_outfiles = ["Phi.poly.unambig.sites", "Phi.log", "Phi.inf.sites", "Phi.inf.list"]
+    try:
+        os.chdir(os.path.abspath(folder))
 
-    for filename in phi_outfiles:
-        new_filename = cluster + "." + filename
-        os.rename(filename, new_filename)
+        phi_outfiles = ["Phi.poly.unambig.sites", "Phi.log", "Phi.inf.sites", "Phi.inf.list"]
+
+        for filename in phi_outfiles:
+            new_filename = cluster + "." + filename
+            os.rename(filename, new_filename)
+
+    except OSError:
+        pass
 
 
 def process_phi_log(cluster):
