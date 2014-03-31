@@ -61,8 +61,6 @@ def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_fold
     from SelectionAnalysis import paml_prepare
     from SelectionAnalysis import paml_run
 
-    print cluster_id
-
     cluster_file = cluster_folder + "/" + cluster_id + ".fna"  # Add fna extension
 
     #Check that the cluster file exists, if not continue
@@ -147,9 +145,11 @@ if __name__ == '__main__':
 
         i += 1
 
-        pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
+        proc = pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
                                                         args.output_directory, temporal_folder, groups_no_data),
                                                         callback=cluster_paml_results.append)
+
+        print proc
 
     pool.close()
     pool.join()
