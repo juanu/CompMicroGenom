@@ -1,53 +1,3 @@
-def cluster_analysis(cluster_list, cluster_folder, output_folder, temp_folder, results, not_found):
-    """
-    This function take the group, alignment, tree and folder information and runs a paml analysis using the M1a, M2a,
-    M7 and M8 models
-    The working dir is important (different from the output dir), because different PAML runs at the same time may
-    override each other.
-    This is particularly important if running this script in more than one processor
-    """
-
-    from SelectionAnalysis import paml_stats
-    from SelectionAnalysis import paml_prepare
-    from SelectionAnalysis import paml_run
-
-    for cluster in cluster_list:
-        cluster_file = cluster_folder + "/" + cluster + ".fna"  # Add fna extension
-
-        #Check that the cluster file exists, if not continue
-        if not os.path.exists(cluster_file):
-            not_found.append(cluster)
-            continue
-
-        #Make a new tree, no confidence values in the branches
-        new_tree = paml_prepare.run_fasttree(cluster_file, temp_folder)
-
-        #Make the new alignment, and get information about the alignment
-        new_alignment_file, number_sequences, alignment_length = \
-            paml_prepare.adjust_alignment(cluster_file, temp_folder)
-
-        #Run PAML for each branch in the cluster with both models
-        paml_sites_results = paml_run.paml_sites(new_alignment_file, new_tree, output_folder, temp_folder)
-
-        #Calculate pvalue
-
-        pvalue_m1_m2 = paml_stats.lrt(paml_sites_results[1].get("lnL"), paml_sites_results[2].get("lnL"), 2)
-        pvalue_m7_m8 = paml_stats.lrt(paml_sites_results[7].get("lnL"), paml_sites_results[8].get("lnL"), 2)
-
-        #Store the omega and proportion of sites,based on the M8 model
-        try:
-            proportion_sites = float(paml_sites_results[8]["site_classes"][10]["proportion"])
-            omega_value = float(paml_sites_results[8]["site_classes"][10]["omega"])
-        except TypeError:
-            proportion_sites = 0
-            omega_value = 0
-
-        #Store final results
-
-        results.append([cluster, number_sequences, alignment_length, round(pvalue_m1_m2, 3), round(pvalue_m7_m8, 3),
-                        proportion_sites, omega_value])
-
-
 def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_folder, outfile, outfile_notfound):
     """
     This function take the group, alignment, tree and folder information and runs a paml analysis using the M1a, M2a,
@@ -92,8 +42,10 @@ def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_fold
 
     #Store final results
 
-    summary_results = [cluster, number_sequences, alignment_length, round(pvalue_m1_m2, 3), round(pvalue_m7_m8, 3),
+    summary_results = [cluster_id, number_sequences, alignment_length, round(pvalue_m1_m2, 3), round(pvalue_m7_m8, 3),
                         proportion_sites, omega_value]
+
+    print summary_results
 
     outfile.write("\t".join(str(x) for x in summary_results) + "\n")
 
