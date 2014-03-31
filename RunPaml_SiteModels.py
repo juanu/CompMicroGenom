@@ -137,6 +137,9 @@ if __name__ == '__main__':
     groups_no_data = []
     i = 1
 
+    def store_results(result):
+        cluster_paml_results.append(result)
+
     for cluster in clusters_to_analyze:
         temporal_folder = args.output_directory + "/temp_" + str(i)
 
@@ -146,9 +149,7 @@ if __name__ == '__main__':
         i += 1
 
         proc = pool.apply_async(single_cluster_analysis, args=[cluster, args.cluster_folder, args.output_directory,
-                                                               temporal_folder, groups_no_data])
-
-#        cluster_paml_results.append(proc)
+                                                               temporal_folder, groups_no_data], callback=store_results)
 
     pool.close()
     pool.join()
