@@ -48,7 +48,7 @@ def cluster_analysis(cluster_list, cluster_folder, output_folder, temp_folder, r
                         proportion_sites, omega_value])
 
 
-def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_folder, not_found):
+def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_folder, outfile, outfile_notfound):
     """
     This function take the group, alignment, tree and folder information and runs a paml analysis using the M1a, M2a,
     M7 and M8 models
@@ -65,7 +65,7 @@ def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_fold
 
     #Check that the cluster file exists, if not continue
     if not os.path.exists(cluster_file):
-        not_found.append(cluster)
+        outfile_notfound.write(cluster_id + "\n")
 
         #Make a new tree, no confidence values in the branches
     new_tree = paml_prepare.run_fasttree(cluster_file, temp_folder)
@@ -90,7 +90,9 @@ def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_fold
         proportion_sites = 0
         omega_value = 0
 
-        #Store final results
+    #Store final results
+
+    outfile.write("\t".join(str(x) for x in result) + "\n")
 
     return [cluster, number_sequences, alignment_length, round(pvalue_m1_m2, 3), round(pvalue_m7_m8, 3),
                         proportion_sites, omega_value]
@@ -119,6 +121,11 @@ if __name__ == '__main__':
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
 
+    #Output files
+
+    output_file = open(args.output_directory + "/paml_results.txt", 'w')
+    no_results_file = open(args.output_directory + "/no_results.txt", 'w')
+
     #Read the cluster file and group file
     clusters_to_analyze = [line.rsplit()[0] for line in open(args.cluster_list) if line.strip()]
 
@@ -141,53 +148,18 @@ if __name__ == '__main__':
         proc = pool.apply_async(single_cluster_analysis, args=[cluster, args.cluster_folder, args.output_directory,
                                                                temporal_folder, groups_no_data])
 
-        cluster_paml_results.append(proc)
+#        cluster_paml_results.append(proc)
 
     pool.close()
     pool.join()
 
 
-    ##Result and output files
-    #manager = Manager()
-    #cluster_paml_results = manager.list([])
-    #groups_no_data = manager.list([])
-    #
-    ##Run in parallel, split the list
-    #num_proc = args.num_processors
-    #num_chunks = len(clusters_to_analyze) / num_proc
-    #clusters_chunks = [clusters_to_analyze[i:i+num_chunks] for i in range(0, len(clusters_to_analyze), num_chunks)]
-    #jobs = []
-    #i = 1
-    #
-    ##Create the jobs to run
-    #for chunk in clusters_chunks:
-    #    temporal_folder = args.output_directory + "/temp_" + str(i)
-    #    if not os.path.exists(temporal_folder):
-    #        os.makedirs(temporal_folder)
-    #
-    #    i += 1
-    #
-    #    p = multiprocessing.Process(target=cluster_analysis,
-    #                                args=(chunk, args.cluster_folder, args.output_directory,
-    #                                      temporal_folder, cluster_paml_results, groups_no_data))
-    #
-    #    jobs.append(p)
-    #
-    ##Run the jobs
-    #[proc.start() for proc in jobs]
-    #
-    #[proc.join() for proc in jobs]
 
-    #Print the
+    #for result in cluster_paml_results:
+    #    output_file.write("\t".join(str(x) for x in result) + "\n")
 
-    output_file = open(args.output_directory + "/paml_results.txt", 'w')
-    no_results_file = open(args.output_directory + "/no_results.txt", 'w')
-
-    for result in cluster_paml_results:
-        output_file.write("\t".join(str(x) for x in result) + "\n")
-
-    for entry in groups_no_data:
-        no_results_file.write(entry + "\n")
+    #for entry in groups_no_data:
+    #    no_results_file.write(entry + "\n")
 
     output_file.close()
     no_results_file.close()
