@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
         i += 1
 
-        proc = pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
+        pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
                                                         args.output_directory, temporal_folder, output_file, no_results_file),
                                                         callback=cluster_paml_results.append)
 
