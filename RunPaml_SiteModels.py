@@ -149,7 +149,7 @@ if __name__ == '__main__':
                                                         args.output_directory, temporal_folder, groups_no_data),
                                                         callback=cluster_paml_results.append)
 
-        print proc
+        single_cluster_analysis(cluster, args.cluster_folder, args.output_directory, temporal_folder, groups_no_data)
 
     pool.close()
     pool.join()
