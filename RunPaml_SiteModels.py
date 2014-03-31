@@ -148,10 +148,9 @@ if __name__ == '__main__':
 
         i += 1
 
-        proc = pool.apply_async(single_cluster_analysis, args=[cluster, args.cluster_folder, args.output_directory,
+        pool.apply_async(single_cluster_analysis, args=[cluster, args.cluster_folder, args.output_directory,
                                                                temporal_folder, groups_no_data], callback=store_results)
 
-    print cluster_paml_results
     pool.close()
     pool.join()
 
