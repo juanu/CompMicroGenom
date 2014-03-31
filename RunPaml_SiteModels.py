@@ -154,6 +154,8 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
+    print cluster_paml_results
+
 
 
     #for result in cluster_paml_results:
