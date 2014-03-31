@@ -148,8 +148,8 @@ if __name__ == '__main__':
 
         i += 1
 
-        pool.apply_async(single_cluster_analysis, args=[cluster, args.cluster_folder, args.output_directory,
-                                                               temporal_folder, groups_no_data], callback=store_results)
+        pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder, args.output_directory,
+                                                               temporal_folder, groups_no_data), callback=store_results)
 
     pool.close()
     pool.join()
