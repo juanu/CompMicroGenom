@@ -146,17 +146,11 @@ if __name__ == '__main__':
         i += 1
 
         proc = pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
-                                                        args.output_directory, temporal_folder, groups_no_data),
+                                                        args.output_directory, temporal_folder, output_file, no_results_file),
                                                         callback=cluster_paml_results.append)
-
-        single_cluster_analysis(cluster, args.cluster_folder, args.output_directory, temporal_folder, groups_no_data)
 
     pool.close()
     pool.join()
-
-    print cluster_paml_results
-
-
 
     #for result in cluster_paml_results:
     #    output_file.write("\t".join(str(x) for x in result) + "\n")
