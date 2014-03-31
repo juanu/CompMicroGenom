@@ -92,10 +92,12 @@ def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_fold
 
     #Store final results
 
-    outfile.write("\t".join(str(x) for x in result) + "\n")
-
-    return [cluster, number_sequences, alignment_length, round(pvalue_m1_m2, 3), round(pvalue_m7_m8, 3),
+    summary_results = [cluster, number_sequences, alignment_length, round(pvalue_m1_m2, 3), round(pvalue_m7_m8, 3),
                         proportion_sites, omega_value]
+
+    outfile.write("\t".join(str(x) for x in summary_results) + "\n")
+
+    return summary_results
 
 if __name__ == '__main__':
     import os
