@@ -1,4 +1,4 @@
-def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_folder, outfile, outfile_notfound):
+def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_folder, outfile_notfound):
     """
     This function take the group, alignment, tree and folder information and runs a paml analysis using the M1a, M2a,
     M7 and M8 models
@@ -47,7 +47,7 @@ def single_cluster_analysis(cluster_id, cluster_folder, output_folder, temp_fold
 
     print summary_results
 
-    outfile.write("\t".join(str(x) for x in summary_results) + "\n")
+
 
     return summary_results
 
@@ -91,6 +91,14 @@ if __name__ == '__main__':
     groups_no_data = []
     i = 1
 
+
+    def store_results(result):
+        output_file.write("\t".join(str(x) for x in result) + "\n")
+        cluster_paml_results.append(result)
+
+    run_results = []
+
+
     for cluster in clusters_to_analyze:
         temporal_folder = args.output_directory + "/temp_" + str(i)
 
@@ -99,9 +107,11 @@ if __name__ == '__main__':
 
         i += 1
 
-        pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
-                                                        args.output_directory, temporal_folder, output_file, no_results_file),
-                                                        callback=cluster_paml_results.append)
+        r = pool.apply_async(single_cluster_analysis, args=(cluster, args.cluster_folder,
+                                                        args.output_directory, temporal_folder, no_results_file),
+                                                        callback=store_results)
+
+        run_results.append(r)
 
     pool.close()
     pool.join()
