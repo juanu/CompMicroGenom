@@ -41,8 +41,8 @@ import argparse
 from collections import defaultdict
 from Common import PrepareData
 
-program_description = "This script takes a folder with gbk files from RAST, and output four files for" \
-                      "each gbk: protein, nucleotide, genome and annotation\n"
+program_description = "This script takes a list of genomes, and uses the IMG dump files files to generate four outputs:" \
+                      ":protein, nucleotide, genome and annotation\n"
 
 parser = argparse.ArgumentParser(description=program_description)
 
