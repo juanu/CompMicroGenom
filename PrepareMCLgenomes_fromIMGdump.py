@@ -158,6 +158,7 @@ for prefix in genome_dictionary:
 
                 protein_id = None
                 product_desc = None
+                locus_tag = None
 
 
                 for feature in features.split(";"):
@@ -166,12 +167,16 @@ for prefix in genome_dictionary:
                     if feature.startswith("product"):
                         info = feature.split("=")
                         product_desc = info[1]
+                    if feature.startswith("locus_tag"):
+                        ltag, locus_tag = feature.split("=")
+
 
                 if protein_id is not None:
                     annotation_summary[protein_id]["Feature_type"] = elements[2]
                     annotation_summary[protein_id]["start"] = elements[3]
                     annotation_summary[protein_id]["end"] = elements[4]
                     annotation_summary[protein_id]["contig"] = elements[0]
+                    annotation_summary[protein_id]["locus_tag"] = locus_tag
 
                 if product_desc is not None:
                     annotation_summary[protein_id]["Product"] = product_desc
