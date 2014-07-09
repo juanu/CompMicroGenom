@@ -19,8 +19,17 @@ parser.add_argument("-c", "--gene_file", type=str,
                     help="Gene file", required=True)
 parser.add_argument("-o", "--output_file", type=str,
                     help="Output file", required=True)
+parser.add_argument("-g", "--genome_list", type=str,
+                    help="Genome list", required=True)
 
 args = parser.parse_args()
+
+#Get the genome information
+species_name_dict = defaultdict()
+for line in open(args.genome_list,'r'):
+    line = line.rstrip()
+    img_id, genome_name, short_name = line.split("\t")
+    species_name_dict[short_name] = genome_name
 
 #Read the gene list
 
@@ -83,8 +92,16 @@ for genome in genome_gene_info:
         except IndexError:
             letter_description = None
 
-        output_line = [genome, protein, product, COG_number, COG_description, letter_cog, letter_description,
-                       PFAM_number, PFAM_description]
+        #Get the locus tag
+        try:
+            locus_tag = protein_annotation[protein]["locus_tag"]
+        except KeyError:
+            locus_tag = None
+
+        #Get the genome name
+
+        output_line = [species_name_dict[genome], genome, protein, locus_tag, product, COG_number, COG_description,
+                       letter_cog, letter_description, PFAM_number, PFAM_description]
 
         output_file.write("\t".join(str(x) for x in output_line) + "\n")
 
