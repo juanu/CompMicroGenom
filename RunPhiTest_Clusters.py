@@ -30,21 +30,26 @@ def process_phi_log(cluster):
 
     log_filename = cluster + "." + "Phi.log"
 
-    for line in open(log_filename, 'r'):
-        if line.strip():
-            line = line.rstrip()
-            if line.startswith("NSS"):
-                results = re.split("\s+", line)
+    try:
+        for line in open(log_filename, 'r'):
+            if line.strip():
+                line = line.rstrip()
+                if line.startswith("NSS"):
+                    results = re.split("\s+", line)
 
-                pvalues["NSS"] = results[1]
+                    pvalues["NSS"] = results[1]
 
-            elif line.startswith("Max"):
-                results = re.split("\s+", line)
-                pvalues["MaxChi2"] = results[2]
+                elif line.startswith("Max"):
+                    results = re.split("\s+", line)
+                    pvalues["MaxChi2"] = results[2]
 
-            elif line.startswith("PHI (Permutation)"):
-                results = re.split("\s+", line)
-                pvalues["PHI"] = results[2]
+                elif line.startswith("PHI (Permutation)"):
+                    results = re.split("\s+", line)
+                    pvalues["PHI"] = results[2]
+    except IOError:
+        pvalues["NSS"] = None
+        pvalues["MaxChi2"] = None
+        pvalues["PHI"] = None
 
     return pvalues
 
@@ -101,12 +106,15 @@ if __name__ == '__main__':
 
         rename_phi_outfiles(phitest_results_folder, cluster_name[:-4])
 
-
         #Process the log file
 
         pvalues = process_phi_log(cluster_name[:-4])
 
         #I want that all the test validate the null hypothesis
+
+        #Skip those clusters with null results
+        if pvalues.values()[0] is None:
+            continue
 
         test_count = 0
 
