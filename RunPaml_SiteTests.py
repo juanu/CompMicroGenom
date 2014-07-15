@@ -1,12 +1,10 @@
 #Created on 7/14/14
 __author__ = 'Juan Ugalde'
 
-#Created on 7/11/2014
-__author__ = 'Juan Ugalde'
-
 #TODO
 #Clean and document the script
 #Check when files are not available
+
 
 def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots):
     from ete2 import EvolTree
@@ -45,9 +43,6 @@ def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots)
     total_sites = 0
     sites_over_95 = 0
 
-    #Output file
-    output_list = []
-
     for s in range(len(model2.sites['BEB']['aa'])):
         p_value_site = float(model2.sites['BEB']['p2'][s])
 
@@ -58,9 +53,7 @@ def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots)
             if p_value_site > 0.95:
                 sites_over_95 += 1
 
-
     #LRT Test
-
     lrt_value = 2 * math.fabs(model1.lnL - model2.lnL)  # LRT test value
     pval = 1 - chi2.cdf(lrt_value, 2)  # p-value based on chi-square
 
@@ -82,9 +75,7 @@ def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots)
          #print "no signal"
         test_status = None
 
-
-    result_entry = [cluster_name, omega_value, proportion_sites, pval, test_status,
-                        total_sites, sites_over_95]
+    result_entry = [cluster_name, omega_value, proportion_sites, pval, test_status, total_sites, sites_over_95]
 
        # print result_entry
         #print ps_sites
@@ -101,8 +92,6 @@ if __name__ == '__main__':
     import multiprocessing
     from ete2 import EvolTree
     from ete2.treeview.layouts import evol_clean_layout
-    import shutil
-    import sys
 
     program_description = "Script that takes a list of clusters, their trees and nucleotide alignments and run the" \
                           "site-branch test on them. It can also perform a FDR analysis using the XXX approach." \
@@ -169,7 +158,6 @@ if __name__ == '__main__':
 
         results_list.append(entry_results)
 
-
     #Create the pool of processors
     pool = multiprocessing.Pool(args.num_processors)
 
@@ -179,11 +167,6 @@ if __name__ == '__main__':
 
         tree_file = args.tree_folder + "/" + cluster + ".tre"
         align_file = args.align_folder + "/" + cluster + ".fna"
-
-        node_id_2_names = defaultdict()
-
-        for entry in EvolTree(tree_file).iter_descendants():
-            node_id_2_names[entry.node_id] = entry.get_leaf_names()
 
         #Check that the files exists
         if not os.path.exists(tree_file):
@@ -219,5 +202,3 @@ if __name__ == '__main__':
     pool.join()
 
     #output_file.close()
-
-
