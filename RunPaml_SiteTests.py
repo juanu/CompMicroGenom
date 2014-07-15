@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
         #Check alignment length. If only two sequences, move to the next one
         fasta_count = 0
-        for line in open(align_file, 'w'):
+        for line in open(align_file, 'r'):
             line = line.strip()
             if line.startswith(">"):
                 fasta_count += 1
