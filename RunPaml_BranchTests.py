@@ -1,12 +1,10 @@
-#Created on 7/14/14
+#Created on 7/15/2014
 __author__ = 'Juan Ugalde'
 
 #TODO
 #Clean and document the script
-#Check when files are not available
 
-
-def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots):
+def run_branch_test(cluster_name, treefile, alignment, folder_temp, folder_plots):
     from ete2 import EvolTree
     from ete2.treeview.layouts import evol_clean_layout
     import os
@@ -27,67 +25,101 @@ def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots)
 
     tree.workdir = temp_cluster_folder
 
-    #Run M1 as the null model
-    tree.run_model("M1")
+    #Run M0 as the null model
+    tree.run_model("M0")
 
-    #Run M2 as the alternative model
-    tree.run_model("M2")
-    model1 = tree.get_evol_model("M1")
-    model2 = tree.get_evol_model("M2")  # Get the results of the model
+    #Look at the site selection on each branch
 
-    #Run the LRT test, using ETE
-    #pval = tree.get_most_likely("M2", "M1")
+    printed_tree = 0
 
-    #Get the positive selected sites
-    ps_sites = defaultdict()
-    total_sites = 0
-    sites_over_95 = 0
+    i = 0
 
-    for s in range(len(model2.sites['BEB']['aa'])):
-        p_value_site = float(model2.sites['BEB']['p2'][s])
+    #Output list with the results
+    output_list = []
 
-        if p_value_site > 0.50:
-            ps_sites[s] = [model2.sites['BEB']['aa'][s], model2.sites['BEB']['p2'][s]]
-            total_sites += 1
+    for node in tree.iter_descendants():
 
-            if p_value_site > 0.95:
-                sites_over_95 += 1
+        #Mark the tree for the leaf under analysis
+        tree.mark_tree([node.node_id], marks=["#1"])
 
-    #LRT Test
-    lrt_value = 2 * math.fabs(model1.lnL - model2.lnL)  # LRT test value
-    pval = 1 - chi2.cdf(lrt_value, 2)  # p-value based on chi-square
+        #Use the node id as folder name
+        temp_leaf_name = str(node.node_id)
 
-    test_status = None
+        print "Processing: " + cluster_name + " " + temp_leaf_name + " " + ",".join(node.get_leaf_names())
 
-    #Evidence of positive selection in the branch
-    omega_value = float(model2.classes['w'][2])
-    proportion_sites = float(model2.classes['proportions'][2])
+        #Run computation of each model.
+        #From the notes on ETE:
+        # to organize a bit, we name model with the name of the marked node
+        # any character after the dot, in model name, is not taken into account
+        # for computation. (have a look in /tmp/ete2.../bsA.. directory)
 
-    #Plot file
-    plot_file = folder_plots + "/" + cluster_name
+        tree.run_model("bsA." + temp_leaf_name)
+        tree.run_model("bsA1." + temp_leaf_name)
 
-    col2 = {'NS' : 'black', 'RX' : 'black',
-        'RX+': 'black', 'CN' : 'black',
-        'CN+': 'black', 'PS' : 'black', 'PS+': 'black'}
+        bsA = tree.get_evol_model("bsA." + temp_leaf_name)
+        bsA1 = tree.get_evol_model("bsA1." + temp_leaf_name)
 
-    if pval < 0.05 and omega_value > 1:
-        #Save plots, both in jpg and svg of the clusters with evidence of positive selection
-        test_status = "Positive"
-        model2.set_histface(up=False, kind='curve', colors=col2, ylim=[0, 4], hlines=[2.5, 1.0, 4.0, 0.5],
-                             hlines_col=['orange', 'yellow', 'red', 'cyan'], errors=True)
+        ps_sites = defaultdict()
+        total_sites = 0
+        sites_over_95 = 0
 
-        tree.render(plot_file + ".svg", layout=evol_clean_layout, histfaces=['M2'])
-        #tree.render(plot_file + ".jpg", layout=evol_clean_layout, histfaces=['M2'])
-    else:
-         #print "no signal"
+        for s in range(len(bsA.sites['BEB']['aa'])):
+            p_value_site = float(bsA.sites['BEB']['p2'][s])
+
+            if p_value_site > 0.50:
+                ps_sites[s] = [bsA.sites['BEB']['aa'][s], bsA.sites['BEB']['p2'][s]]
+                total_sites += 1
+
+                if p_value_site > 0.95:
+                    sites_over_95 += 1
+
+        #ps = float(tree.get_most_likely("bsA." + temp_leaf_name, "bsA1." + temp_leaf_name))
+        rx = float(tree.get_most_likely("bsA1." + temp_leaf_name, "M0"))
+
+        lrt_value = 2 * math.fabs(bsA1.lnL - bsA.lnL)  # LRT test value
+        ps = 1 - chi2.cdf(lrt_value, 1)  # p-value based on chi-square
+
+
         test_status = None
 
-    result_entry = [cluster_name, omega_value, proportion_sites, pval, test_status, total_sites, sites_over_95]
+        #Evidence of positive selection in the branch
+        omega_value = float(bsA.classes['foreground w'][2])
+        proportion_sites = float(bsA.classes['proportions'][2])
+
+        #Plot file
+        plot_file = folder_plots + "/" + cluster_name
+
+        if ps < 0.05 and omega_value > 1:
+            #Save plots, both in jpg and svg of the clusters with evidence of positive selection
+            test_status = "Positive"
+
+            if printed_tree == 0:
+
+                #tree.render(plot_file + ".svg", layout=evol_clean_layout)
+                #tree.render(plot_file + ".jpg", layout=evol_clean_layout)
+                printed_tree = 1
+
+            else:
+                continue
+
+        elif rx < 0.05 and ps >= 0.05:
+            test_status = "Relaxed"
+
+        else:
+            #print "no signal"
+            test_status = None
+
+        #Remove marks on the tree
+        tree.mark_tree(map(lambda x: x.node_id, tree.get_descendants()), marks=[''] * len(tree.get_descendants()),
+                       verbose=False)
+
+        result_entry = [cluster_name, node.node_id, omega_value, proportion_sites, ps, test_status,
+                        total_sites, sites_over_95, ",".join(node.get_leaf_names())]
 
        # print result_entry
         #print ps_sites
         #node_results[node.node_id] = [result_entry, ps_sites]
-    output_list = [result_entry, ps_sites]
+        output_list = [result_entry, ps_sites]
 
     return output_list
 
@@ -99,9 +131,11 @@ if __name__ == '__main__':
     import multiprocessing
     from ete2 import EvolTree
     from ete2.treeview.layouts import evol_clean_layout
+    import shutil
+    import sys
 
     program_description = "Script that takes a list of clusters, their trees and nucleotide alignments and run the" \
-                          "site-branch test on them. It can also perform a FDR analysis using the XXX approach." \
+                          "site-branch test on them." \
                           "This script will test all the branches on the tree."
 
     parser = argparse.ArgumentParser(description=program_description)
@@ -152,18 +186,16 @@ if __name__ == '__main__':
         output_file.write("\t".join(str(x) for x in entry_results) + "\n")
 
         cluster_id = entry_results[0]
+        node = entry_results[0]
 
-        if sites_results:
+        site_file = open(sites_folder + "/" + cluster_id + "_" + node + ".txt", 'w')
 
-            site_file = open(sites_folder + "/" + cluster_id + ".txt", 'w')
-
-            for position in sites_results:
-                aa, prob = sites_results[position]
-                site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
-
-            site_file.close()
+        for position in sites_results:
+            aa, prob = sites_results[position]
+            site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
 
         results_list.append(entry_results)
+        site_file.close()
 
     #Create the pool of processors
     pool = multiprocessing.Pool(args.num_processors)
@@ -175,6 +207,11 @@ if __name__ == '__main__':
         tree_file = args.tree_folder + "/" + cluster + ".tre"
         align_file = args.align_folder + "/" + cluster + ".fna"
 
+        node_id_2_names = defaultdict()
+
+        for entry in EvolTree(tree_file).iter_descendants():
+            node_id_2_names[entry.node_id] = entry.get_leaf_names()
+
         #Check that the files exists
         if not os.path.exists(tree_file):
             print "Tree file missing: " + tree_file
@@ -185,22 +222,12 @@ if __name__ == '__main__':
             print "Alignment missing: " + align_file
             no_results_file.write(cluster + "\n")
 
-        #Check alignment length. If only two sequences, move to the next one
-        fasta_count = 0
-        for line in open(align_file, 'r'):
-            line = line.strip()
-            if line.startswith(">"):
-                fasta_count += 1
-
-        if not fasta_count > 2:
-            continue
-
         #Results, the first element has:
         #The second is a dictionary with the positive selected sites
 
         #results_dict[cluster] = run_site_branch(cluster, tree_file, align_file, temp_folder, plot_folder)
 
-        p = pool.apply_async(run_site_tests, args=(cluster, tree_file, align_file, temp_folder, plot_folder,),
+        p = pool.apply_async(run_site_branch, args=(cluster, tree_file, align_file, temp_folder, plot_folder,),
                              callback=store_results)
 
         run_results.append(p)
@@ -208,4 +235,6 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    #output_file.close()
+    output_file.close()
+
+
