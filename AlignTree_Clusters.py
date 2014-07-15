@@ -105,7 +105,7 @@ if __name__ == '__main__':
             else:
                 frameshift_cases.append([cluster, genome_id, protein_id])
 
-        if len(curated_protein_list) < 3:  # Only take those clusters with 3 sequences or more
+        if len(curated_protein_list) < 2:  # Only take those clusters with 3 sequences or more
             clusters_too_short.append(cluster)
             continue
 
