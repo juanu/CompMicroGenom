@@ -195,6 +195,16 @@ if __name__ == '__main__':
             print "Alignment missing: " + align_file
             no_results_file.write(cluster + "\n")
 
+        #Check alignment length. If only two sequences, move to the next one
+        fasta_count = 0
+        for line in open(align_file, 'w'):
+            line = line.strip()
+            if line.startswith(">"):
+                fasta_count += 1
+
+        if not fasta_count > 2:
+            continue
+
         #Results, the first element has:
         #The second is a dictionary with the positive selected sites
 
