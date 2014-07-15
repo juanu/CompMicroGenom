@@ -77,7 +77,7 @@ def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots)
                              hlines_col=['orange', 'yellow', 'red', 'cyan'], errors=True)
 
         tree.render(plot_file + ".svg", layout=evol_clean_layout, histfaces=['M2'])
-        tree.render(plot_file + ".jpg", layout=evol_clean_layout, histfaces=['M2'])
+        #tree.render(plot_file + ".jpg", layout=evol_clean_layout, histfaces=['M2'])
     else:
          #print "no signal"
         test_status = None
