@@ -142,7 +142,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=program_description)
 
     parser.add_argument("-c", "--cluster_list", type=str, help="Cluster file", required=True)
-    parser.add_argument("-n", "--cluster_folder", type=str, help="Output folder", required=True)
+    parser.add_argument("-n", "--cluster_folder", type=str, help="Cluster folder", required=True)
     parser.add_argument("-g", "--groups", type=str, help="Group constrains", required=True)
     parser.add_argument("-o", "--output_directory", type=str, help="Output folder", required=True)
     parser.add_argument("-p", "--num_processors", type=int, help="Number of processors to use (Default is 1)", default=1)
