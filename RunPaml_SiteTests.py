@@ -66,11 +66,18 @@ def run_site_tests(cluster_name, treefile, alignment, folder_temp, folder_plots)
     #Plot file
     plot_file = folder_plots + "/" + cluster_name
 
+    col2 = {'NS' : 'black', 'RX' : 'black',
+        'RX+': 'black', 'CN' : 'black',
+        'CN+': 'black', 'PS' : 'black', 'PS+': 'black'}
+
     if pval < 0.05 and omega_value > 1:
         #Save plots, both in jpg and svg of the clusters with evidence of positive selection
         test_status = "Positive"
-        tree.render(plot_file + ".svg", layout=evol_clean_layout)
-        tree.render(plot_file + ".jpg", layout=evol_clean_layout)
+        model2.set_histface(up=False, kind='curve', colors=col2, ylim=[0, 4], hlines=[2.5, 1.0, 4.0, 0.5],
+                             hlines_col=['orange', 'yellow', 'red', 'cyan'], errors=True)
+
+        tree.render(plot_file + ".svg", layout=evol_clean_layout, histfaces=['M2'])
+        tree.render(plot_file + ".jpg", layout=evol_clean_layout, histfaces=['M2'])
     else:
          #print "no signal"
         test_status = None
