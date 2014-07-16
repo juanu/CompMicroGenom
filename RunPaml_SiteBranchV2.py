@@ -186,7 +186,7 @@ if __name__ == '__main__':
         cluster_id = entry_results[0]
         node = entry_results[1]
 
-        site_file = open(sites_folder + "/" + cluster_id + "_" + node + ".txt", 'w')
+        site_file = open(sites_folder + "/" + cluster_id + "_" + str(node) + ".txt", 'w')
 
         if sites_results:
             for position in sites_results:
