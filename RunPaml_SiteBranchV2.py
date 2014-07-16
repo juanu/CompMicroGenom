@@ -207,6 +207,16 @@ if __name__ == '__main__':
         tree_file = args.tree_folder + "/" + cluster + ".tre"
         align_file = args.align_folder + "/" + cluster + ".fna"
 
+        #Check alignment length. If only two sequences, move to the next one
+        fasta_count = 0
+        for line in open(align_file, 'r'):
+            line = line.strip()
+            if line.startswith(">"):
+                fasta_count += 1
+
+        if not fasta_count > 2:
+            continue
+
         node_id_2_names = defaultdict()
 
         for entry in EvolTree(tree_file).iter_descendants():
