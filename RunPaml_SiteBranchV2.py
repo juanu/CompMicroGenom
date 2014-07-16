@@ -79,7 +79,6 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
         lrt_value = 2 * math.fabs(bsA1.lnL - bsA.lnL)  # LRT test value
         ps = 1 - chi2.cdf(lrt_value, 1)  # p-value based on chi-square
 
-
         test_status = None
 
         #Evidence of positive selection in the branch
@@ -94,7 +93,6 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
             test_status = "Positive"
 
             if printed_tree == 0:
-
                 #tree.render(plot_file + ".svg", layout=evol_clean_layout)
                 #tree.render(plot_file + ".jpg", layout=evol_clean_layout)
                 printed_tree = 1
@@ -186,13 +184,14 @@ if __name__ == '__main__':
         output_file.write("\t".join(str(x) for x in entry_results) + "\n")
 
         cluster_id = entry_results[0]
-        node = entry_results[0]
+        node = entry_results[1]
 
         site_file = open(sites_folder + "/" + cluster_id + "_" + node + ".txt", 'w')
 
-        for position in sites_results:
-            aa, prob = sites_results[position]
-            site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
+        if sites_results:
+            for position in sites_results:
+                aa, prob = sites_results[position]
+                site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
 
         results_list.append(entry_results)
         site_file.close()
