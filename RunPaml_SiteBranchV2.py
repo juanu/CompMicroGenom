@@ -181,20 +181,24 @@ if __name__ == '__main__':
 
         entry_results, sites_results = combined_results
 
+        print entry_results
+
         output_file.write("\t".join(str(x) for x in entry_results) + "\n")
 
         cluster_id = entry_results[0]
         node = entry_results[1]
 
-        site_file = open(sites_folder + "/" + cluster_id + "_" + str(node) + ".txt", 'w')
-
         if sites_results:
+            site_file = open(sites_folder + "/" + cluster_id + "_" + str(node) + ".txt", 'w')
+
             for position in sites_results:
                 aa, prob = sites_results[position]
                 site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
 
+            site_file.close()
+
         results_list.append(entry_results)
-        site_file.close()
+
 
     #Create the pool of processors
     pool = multiprocessing.Pool(args.num_processors)
