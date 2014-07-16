@@ -207,6 +207,16 @@ if __name__ == '__main__':
         tree_file = args.tree_folder + "/" + cluster + ".tre"
         align_file = args.align_folder + "/" + cluster + ".fna"
 
+        #Check that the files exists
+        if not os.path.exists(tree_file):
+            print "Tree file missing: " + tree_file
+            no_results_file.write(cluster + "\n")
+            continue
+
+        if not os.path.exists(align_file):
+            print "Alignment missing: " + align_file
+            no_results_file.write(cluster + "\n")
+
         #Check alignment length. If only two sequences, move to the next one
         fasta_count = 0
         for line in open(align_file, 'r'):
@@ -221,16 +231,6 @@ if __name__ == '__main__':
 
         for entry in EvolTree(tree_file).iter_descendants():
             node_id_2_names[entry.node_id] = entry.get_leaf_names()
-
-        #Check that the files exists
-        if not os.path.exists(tree_file):
-            print "Tree file missing: " + tree_file
-            no_results_file.write(cluster + "\n")
-            continue
-
-        if not os.path.exists(align_file):
-            print "Alignment missing: " + align_file
-            no_results_file.write(cluster + "\n")
 
         #Results, the first element has:
         #The second is a dictionary with the positive selected sites
