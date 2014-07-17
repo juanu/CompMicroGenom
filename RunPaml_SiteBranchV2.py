@@ -4,6 +4,7 @@ __author__ = 'Juan Ugalde'
 #TODO
 #Clean and document the script
 
+
 def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots):
     from ete2 import EvolTree
     from ete2.treeview.layouts import evol_clean_layout
@@ -117,7 +118,9 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
        # print result_entry
         #print ps_sites
         #node_results[node.node_id] = [result_entry, ps_sites]
-        output_list = [result_entry, ps_sites]
+        node_result = [result_entry, ps_sites]
+
+        output_list.append(node_result)
 
     return output_list
 
@@ -177,28 +180,27 @@ if __name__ == '__main__':
     #Prepare for multiprocessing
 
     #Function to store the results
-    def store_results(combined_results):
+    def store_results(cluster_results):
 
-        entry_results, sites_results = combined_results
+        for entry in cluster_results:
 
-        print entry_results
+            node_results, sites_results = entry
 
-        output_file.write("\t".join(str(x) for x in entry_results) + "\n")
+            output_file.write("\t".join(str(x) for x in node_results) + "\n")
 
-        cluster_id = entry_results[0]
-        node = entry_results[1]
+            cluster_id = node_results[0]
+            node = node_results[1]
 
-        if sites_results:
-            site_file = open(sites_folder + "/" + cluster_id + "_" + str(node) + ".txt", 'w')
+            if sites_results:
+                site_file = open(sites_folder + "/" + cluster_id + "_" + str(node) + ".txt", 'w')
 
-            for position in sites_results:
-                aa, prob = sites_results[position]
-                site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
+                for position in sites_results:
+                    aa, prob = sites_results[position]
+                    site_file.write("\t".join(str(x) for x in [position, aa, prob]) + "\n")
 
-            site_file.close()
+                site_file.close()
 
-        results_list.append(entry_results)
-
+            results_list.append(node_results)
 
     #Create the pool of processors
     pool = multiprocessing.Pool(args.num_processors)
