@@ -196,7 +196,7 @@ for prefix in genome_dictionary:
                 if annotation_defs.has_key(function):
                     output_line = protein + "\t" + annotation_type + "\t" + function + "\t" + annotation_defs[function]
                 else:
-                    output_line = protein + "\t" + annotation_type + "\t" + function
+                    output_line = protein + "\t" + str(annotation_type) + "\t" + str(function)
                 annotation_file.write(output_line + "\n")
 
         coords_file.write(annotation_summary[protein]["contig"] + "\t" + protein + "\t" + annotation_summary[protein]["start"] + "\t" + annotation_summary[protein]["end"] + "\n")
