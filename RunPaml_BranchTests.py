@@ -3,6 +3,7 @@ __author__ = 'Juan Ugalde'
 
 #TODO
 #Clean and document the script
+#Incomplete!
 
 def run_branch_test(cluster_name, treefile, alignment, folder_temp, folder_plots):
     from ete2 import EvolTree
